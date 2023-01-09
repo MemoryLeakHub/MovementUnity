@@ -6,6 +6,7 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     public GameObject box;
+    public GameObject boxPhysics;
     public GameObject redBox;
     public GameObject blueBox;
     public GameObject boxFacingLine;
@@ -23,7 +24,9 @@ public class Movement : MonoBehaviour
     private Vector3 boxStartPosition = new Vector3(0,0,0);
     public void ResetPosition() {
         HideFacingLine();
+        box.active = false;
         box.transform.rotation = Quaternion.identity;
+        boxPhysics.active = false;
         start = false;
         visualDistance = 0;
         distanceGroup.active = false;
@@ -39,7 +42,12 @@ public class Movement : MonoBehaviour
     public void Trigger() { 
         boxStartPosition = box.transform.position;
         start = true;
-        exampleValue.text = example.ToString();
+
+        if (example == 1) {
+            Example1();
+        } else if (example == 2) {
+            Example2();
+        }
     }
     
 
@@ -119,6 +127,11 @@ public class Movement : MonoBehaviour
 
     public void SetExample(int value) {
         example = value;
+        exampleValue.text = example.ToString();
+
+        if (example >= 0 && example <= 20) { 
+            ShowBox();
+        }
     }
     // Example 1
     // transform.position - set the position anywhere in the map
@@ -132,6 +145,12 @@ public class Movement : MonoBehaviour
     // add to the box x amount
     public void TranslateX(float x) { 
         box.transform.Translate(x,0,0);
+    }
+    private void Example1()  { 
+        SetXPosition(2);
+    }
+    private void Example2()  { 
+        TranslateX(2);
     }
     void Update() { 
         if (!start) {
@@ -307,56 +326,53 @@ public class Movement : MonoBehaviour
         if (example == 17) {
             ShowRedBox(2);
 
-            if (box.transform.position.x >= redBox.transform.position.x) {
-                return;
-            }
-
             var target = redBox.transform.position;
             var totalTime = 1.5f;
             box.transform.position = Vector3.Lerp(boxStartPosition, target, timeElapsed / totalTime);
             
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
             ShowTimer();
         }
         if (example == 18) {
             ShowRedBox(2);
-
-            if (box.transform.position.x >= redBox.transform.position.x) {
-                return;
-            }
 
             var target = redBox.transform.position;
             var totalTime = 1.5f;
             var time = timeElapsed / totalTime;
             box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseIn(time));
             
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
             ShowTimer();
         }
         if (example == 19) {
             ShowRedBox(2);
-
-            if (box.transform.position.x >= redBox.transform.position.x) {
-                return;
-            }
 
             var target = redBox.transform.position;
             var totalTime = 1.5f;
             var time = timeElapsed / totalTime;
             box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseOut(time));
             
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
             ShowTimer();
         }
         if (example == 20) {
             ShowRedBox(2);
-
-            if (box.transform.position.x >= redBox.transform.position.x) {
-                return;
-            }
 
             var target = redBox.transform.position;
             var totalTime = 1.5f;
             var time = timeElapsed / totalTime;
             box.transform.position = Vector3.Lerp(boxStartPosition, target, BounceOut(time));
             
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
             ShowTimer();
         }
     }
@@ -376,6 +392,13 @@ public class Movement : MonoBehaviour
         timerText.text = visualTime.ToString("f2");
     }
 
+
+    private void ShowBox() { 
+        box.active = true;
+    }
+    private void ShowPhysicsBox() { 
+        boxPhysics.active = true;
+    }
     // Show Destination
     private void ShowRedBox(float x) { 
         redBox.active = true;
@@ -400,19 +423,11 @@ public class Movement : MonoBehaviour
     }
 
     // Easing Functions: https://gist.github.com/Fonserbc/3d31a25e87fdaa541ddf
-    private float EaseIn(float t) {
-        return t * t;
+    private float EaseIn(float k) {
+        return k*k*k;
     }
-    private float EaseOut(float t)
-    {
-        return Flip(Square(Flip(t)));
-    }
-    private float Square(float t) { 
-        return t * t;
-    }
-    private float Flip(float t)
-    {
-        return 1 - t;
+    private float EaseOut(float k) {
+        return 1f + ((k -= 1f)*k*k);
     }
     private float BounceIn (float k) {
         return 1f - BounceOut(1f - k);
