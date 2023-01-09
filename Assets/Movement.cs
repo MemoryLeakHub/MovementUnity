@@ -10,8 +10,12 @@ public class Movement : MonoBehaviour
     public GameObject blueBox;
     public GameObject boxFacingLine;
     
+    public GameObject distanceGroup;
+    public GameObject timerGroup;
     public TMP_Text timerText;
+    public TMP_Text distanceText;
     private float visualTime = 0.0f;
+    private float visualDistance = 0.0f;
     private float timer = 0.0f;
     private bool start = false;
     private int example = 0;
@@ -19,8 +23,12 @@ public class Movement : MonoBehaviour
         HideFacingLine();
         box.transform.rotation = Quaternion.identity;
         start = false;
+        visualDistance = 0;
+        distanceGroup.active = false;
+        distanceText.gameObject.active = false;
         timer = 0;
         visualTime = 0;
+        timerGroup.active = false;
         redBox.active = false;
         timerText.gameObject.active = false;
         box.transform.position = new Vector2(-5.72f, 1.12f);
@@ -36,6 +44,7 @@ public class Movement : MonoBehaviour
     // Example 6 = transform.position onUpdate with Vector.right show Destination when object is rotated
     // Example 7 = transform.Translate onUpdate with Vector.right show Destination
     // Example 8 = transform.Translate onUpdate with Vector.right show Destination when object is rotated
+    // Example 9 = transform.Translate onUpdate show Destination with directional Vector Show Distance
     // Example 6 = transform.Translate onUpdate show Destination with directional Vector
 
     // Directional Vectors
@@ -109,10 +118,33 @@ public class Movement : MonoBehaviour
             box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
             ShowTimer();
         }
-    }
+        if (example == 9) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
+            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
+
+            Vector3 direction = box.transform.position - redBox.transform.position;
+            float distance = direction.magnitude;
+            SetDistance(distance);
+
+            ShowTimer();
+            ShowDistance();
+        }
+    }
+    private void SetDistance(float dist) { 
+        visualDistance = dist;
+    }
+    private void ShowDistance() { 
+        distanceGroup.active = true;
+        distanceText.gameObject.active = true;
+        distanceText.text = visualDistance.ToString("f2");
+    }
     // Show Timer
     private void ShowTimer() { 
+        timerGroup.active = true;
         timerText.gameObject.active = true;
         visualTime = timer;
         timerText.text = visualTime.ToString("f2");
