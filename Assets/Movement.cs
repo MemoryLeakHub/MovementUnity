@@ -32,6 +32,7 @@ public class Movement : MonoBehaviour
         redBox.active = false;
         timerText.gameObject.active = false;
         box.transform.position = new Vector2(-5.72f, 1.12f);
+        redBox.transform.position = new Vector2(-5.72f, 1.12f);
     }
     public void Trigger() { 
         start = true;
@@ -39,13 +40,35 @@ public class Movement : MonoBehaviour
     // Example 1 - transform.position
     // Example 2 - transform.Translate 
     // Example 3 = transform.position onUpdate
-    // Example 4 = transform.position onUpdate with Vector.right
-    // Example 5 = transform.position onUpdate with Vector.right show Destination 
-    // Example 6 = transform.position onUpdate with Vector.right show Destination when object is rotated
-    // Example 7 = transform.Translate onUpdate with Vector.right show Destination
-    // Example 8 = transform.Translate onUpdate with Vector.right show Destination when object is rotated
-    // Example 9 = transform.Translate onUpdate show Destination with directional Vector Show Distance
-    // Example 6 = transform.Translate onUpdate show Destination with directional Vector
+    // Example 4 = transform.position onUpdate
+    // ** Vector.right
+    // Example 5 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Vector.right 
+    // Example 6 = transform.position onUpdate
+    // * Show - Red Box, Rotate Current Box
+    // ** Vector.right
+    // Example 7 = transform.Translate onUpdate
+    // * Show - Red Box
+    // ** Vector.right
+    // Example 8 = transform.Translate onUpdate
+    // * Show - Red Box, Rotate Current Box
+    // ** Vector.right
+    // Example 9 = transform.Translate onUpdate
+    // * Show - Red Box, Direction
+    // ** Vector.right
+    // Example 10 = transform.Translate onUpdate
+    // * Show - Red Box, Direction
+    // ** Direction based on Magnitude
+    // Example 11 = transform.Translate onUpdate
+    // * Show - Red Box, Direction
+    // ** Direction based on Magnitude
+    // ** Change Y destination of end target
+    // Example 12 = transform.Translate onUpdate
+    // * Show - Red Box, Direction
+    // ** Direction based on Magnitude
+    // ** Change Y destination of end target
+    // ** Set Y of heading as 0 so we move only X
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -124,10 +147,59 @@ public class Movement : MonoBehaviour
                 return;
             }
 
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            SetDistance(distance);
+
             box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
 
-            Vector3 direction = box.transform.position - redBox.transform.position;
-            float distance = direction.magnitude;
+            ShowTimer();
+            ShowDistance();
+        }
+        if (example == 10) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            var direction = heading / distance;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
+
+            SetDistance(distance);
+
+            ShowTimer();
+            ShowDistance();
+        }
+        if (example == 11) {
+            ShowRedBox(2, 2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            var direction = heading / distance;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
+
+            SetDistance(distance);
+
+            ShowTimer();
+            ShowDistance();
+        }
+        if (example == 12) {
+            ShowRedBox(2, 2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            heading.y = 0;
+            var distance = heading.magnitude;
+            var direction = heading / distance;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
+
             SetDistance(distance);
 
             ShowTimer();
