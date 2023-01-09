@@ -14,11 +14,13 @@ public class Movement : MonoBehaviour
     public GameObject timerGroup;
     public TMP_Text timerText;
     public TMP_Text distanceText;
+    public TMP_Text exampleValue;
     private float visualTime = 0.0f;
     private float visualDistance = 0.0f;
-    private float timer = 0.0f;
+    private float timeElapsed = 0.0f;
     private bool start = false;
     private int example = 0;
+    private Vector3 boxStartPosition = new Vector3(0,0,0);
     public void ResetPosition() {
         HideFacingLine();
         box.transform.rotation = Quaternion.identity;
@@ -26,7 +28,7 @@ public class Movement : MonoBehaviour
         visualDistance = 0;
         distanceGroup.active = false;
         distanceText.gameObject.active = false;
-        timer = 0;
+        timeElapsed = 0;
         visualTime = 0;
         timerGroup.active = false;
         redBox.active = false;
@@ -35,8 +37,12 @@ public class Movement : MonoBehaviour
         redBox.transform.position = new Vector2(-5.72f, 1.12f);
     }
     public void Trigger() { 
+        boxStartPosition = box.transform.position;
         start = true;
+        exampleValue.text = example.ToString();
     }
+    
+
     // Example 1 - transform.position
     // Example 2 - transform.Translate 
     // Example 3 = transform.position onUpdate
@@ -55,20 +61,41 @@ public class Movement : MonoBehaviour
     // * Show - Red Box, Rotate Current Box
     // ** Vector.right
     // Example 9 = transform.Translate onUpdate
-    // * Show - Red Box, Direction
+    // * Show - Red Box, Distance
     // ** Vector.right
     // Example 10 = transform.Translate onUpdate
-    // * Show - Red Box, Direction
+    // * Show - Red Box, Distance
     // ** Direction based on Magnitude
     // Example 11 = transform.Translate onUpdate
-    // * Show - Red Box, Direction
+    // * Show - Red Box, Distance
     // ** Direction based on Magnitude
     // ** Change Y destination of end target
     // Example 12 = transform.Translate onUpdate
-    // * Show - Red Box, Direction
+    // * Show - Red Box, Distance
     // ** Direction based on Magnitude
     // ** Change Y destination of end target
     // ** Set Y of heading as 0 so we move only X
+    // Example 13 = transform.Translate onUpdate
+    // * Show - Red Box, Distance
+    // ** Direction based on Magnitude
+    // ** Get starting box position on Trigger
+    // ** Move for X Seconds to Detination
+    // ** Calculate Speed based on Distance/Time
+    // Example 14 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Direction based on Vector3.right
+    // ** MoveTowards ensures we never go beyond the target
+    // Example 15 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Direction based on Vector3.right
+    // ** MoveTowards ensures we never go beyond the target
+    // ** Vector3.Distance stop Timer
+    // Example 16 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Mathf.Lerp - returns float, change X value to move 
+    // Example 17 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Vector3.Lerp - returns Vector3, from target to target
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -98,7 +125,7 @@ public class Movement : MonoBehaviour
         if (!start) {
             return;
         }
-        timer += Time.deltaTime;
+        timeElapsed += Time.deltaTime;
         if (example == 3) {
             box.transform.position += new Vector3(2 * Time.deltaTime,0);   
         }
@@ -164,7 +191,7 @@ public class Movement : MonoBehaviour
 
             Vector3 heading = redBox.transform.position - box.transform.position;
             var distance = heading.magnitude;
-            var direction = heading / distance;
+            var direction = heading.normalized;
             box.transform.Translate(direction * 2 * Time.deltaTime);
 
             SetDistance(distance);
@@ -180,7 +207,7 @@ public class Movement : MonoBehaviour
 
             Vector3 heading = redBox.transform.position - box.transform.position;
             var distance = heading.magnitude;
-            var direction = heading / distance;
+            var direction = heading.normalized;
             box.transform.Translate(direction * 2 * Time.deltaTime);
 
             SetDistance(distance);
@@ -197,13 +224,86 @@ public class Movement : MonoBehaviour
             Vector3 heading = redBox.transform.position - box.transform.position;
             heading.y = 0;
             var distance = heading.magnitude;
-            var direction = heading / distance;
+            var direction = heading.normalized;
             box.transform.Translate(direction * 2 * Time.deltaTime);
 
             SetDistance(distance);
 
             ShowTimer();
             ShowDistance();
+        }
+        if (example == 13) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            Vector3 heading = redBox.transform.position - boxStartPosition;
+            var distance = heading.magnitude;
+            var direction = heading.normalized;
+            var totalTime = 1.5f; // seconds
+            var speed = distance / totalTime;
+            box.transform.Translate(direction * speed * Time.deltaTime);
+
+            SetDistance(distance);
+
+            ShowTimer();
+            ShowDistance();
+        }
+        if (example == 14) {
+            ShowRedBox(2);
+
+            var speed = 2; // seconds
+            var step = speed * Time.deltaTime;
+            var target = redBox.transform.position;
+            box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
+
+            ShowTimer();
+        }
+        if (example == 15) {
+            ShowRedBox(2);
+
+            var speed = 2; // seconds
+            var step = speed * Time.deltaTime;
+            var target = redBox.transform.position;
+            box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
+            
+            // if (box.transform.position.x >= redBox.transform.position.x) {
+            //     return;
+            // }
+            if (Vector3.Distance(box.transform.position, target) < 0.001f)
+            {
+                return;
+            }
+
+            ShowTimer();
+        }
+        if (example == 16) {
+            ShowRedBox(2);
+
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var x = Mathf.Lerp(boxStartPosition.x, target.x, timeElapsed / totalTime);
+            SetXPosition(x);
+            
+            ShowTimer();
+        }
+        if (example == 17) {
+            ShowRedBox(2);
+
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, timeElapsed / totalTime);
+            
+            ShowTimer();
         }
     }
     private void SetDistance(float dist) { 
@@ -218,7 +318,7 @@ public class Movement : MonoBehaviour
     private void ShowTimer() { 
         timerGroup.active = true;
         timerText.gameObject.active = true;
-        visualTime = timer;
+        visualTime = timeElapsed;
         timerText.text = visualTime.ToString("f2");
     }
 
