@@ -96,6 +96,18 @@ public class Movement : MonoBehaviour
     // Example 17 = transform.position onUpdate
     // * Show - Red Box
     // ** Vector3.Lerp - returns Vector3, from target to target
+    // Example 18 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Vector3.Lerp - returns Vector3, from target to target
+    // ** EaseIn - changes the time value
+    // Example 19 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Vector3.Lerp - returns Vector3, from target to target
+    // ** EaseOut - changes the time value
+    // Example 20 = transform.position onUpdate
+    // * Show - Red Box
+    // ** Vector3.Lerp - returns Vector3, from target to target
+    // ** BounceOut - changes the time value
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -305,6 +317,48 @@ public class Movement : MonoBehaviour
             
             ShowTimer();
         }
+        if (example == 18) {
+            ShowRedBox(2);
+
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseIn(time));
+            
+            ShowTimer();
+        }
+        if (example == 19) {
+            ShowRedBox(2);
+
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseOut(time));
+            
+            ShowTimer();
+        }
+        if (example == 20) {
+            ShowRedBox(2);
+
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, BounceOut(time));
+            
+            ShowTimer();
+        }
     }
     private void SetDistance(float dist) { 
         visualDistance = dist;
@@ -343,5 +397,42 @@ public class Movement : MonoBehaviour
     
     private void HideFacingLine() {  
         boxFacingLine.active = false;
+    }
+
+    // Easing Functions: https://gist.github.com/Fonserbc/3d31a25e87fdaa541ddf
+    private float EaseIn(float t) {
+        return t * t;
+    }
+    private float EaseOut(float t)
+    {
+        return Flip(Square(Flip(t)));
+    }
+    private float Square(float t) { 
+        return t * t;
+    }
+    private float Flip(float t)
+    {
+        return 1 - t;
+    }
+    private float BounceIn (float k) {
+        return 1f - BounceOut(1f - k);
+    }
+    private float BounceOut (float k) {			
+        if (k < (1f/2.75f)) {
+            return 7.5625f*k*k;				
+        }
+        else if (k < (2f/2.75f)) {
+            return 7.5625f*(k -= (1.5f/2.75f))*k + 0.75f;
+        }
+        else if (k < (2.5f/2.75f)) {
+            return 7.5625f *(k -= (2.25f/2.75f))*k + 0.9375f;
+        }
+        else {
+            return 7.5625f*(k -= (2.625f/2.75f))*k + 0.984375f;
+        }
+    }
+    private float BounceInOut (float k) {
+        if (k < 0.5f) return BounceIn(k*2f)*0.5f;
+        return BounceOut(k*2f - 1f)*0.5f + 0.5f;
     }
 }
