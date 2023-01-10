@@ -12,6 +12,7 @@ public class Movement : MonoBehaviour
     public GameObject blueBox;
     public GameObject boxFacingLine;
     public GameObject redBoxFacingLine;
+    public GameObject emptyCircle;
 
     public GameObject keys;
     public GameObject topKey;
@@ -39,7 +40,13 @@ public class Movement : MonoBehaviour
     private int example = 0;
     private Vector3 boxStartPosition = new Vector3(0,0,0);
     private Vector2 movementDirection;
+    public GameObject exampleWrapper;
+    private List<GameObject> planets = new List<GameObject>();
     public void ResetPosition() {
+        planets.Clear();
+        foreach (Transform child in exampleWrapper.transform) {
+            GameObject.Destroy(child.gameObject);
+        }
         HideRedBoxFacingLine();
         HideFacingLine();
         physicsBox.active = false;
@@ -77,6 +84,8 @@ public class Movement : MonoBehaviour
             Example2();
         }
     }
+
+    
     
 
     // Example 1 - transform.position
@@ -187,6 +196,15 @@ public class Movement : MonoBehaviour
     // ** Quaternion.AngleAxis
     // Example 30 = RotateAround onUpdate
     // * Show - Red Box, ShowRotation
+    // Example 31 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
+    // ** Rotate Clockwise with Vector.back
+    // ** RedBox look at object
+    // Example 31 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
+    // ** Rotate Clockwise with Vector.back
+    // ** RedBox look at object
+    // ** Middle Box looks at RedBox 
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -213,13 +231,27 @@ public class Movement : MonoBehaviour
             ShowPhysicsBox();
             ShowPhysicsGround();
             ShowRedPlatformPhysics(2);
-        } else if (example == 30) {
+        } else if (example == 30 || example == 31 || example == 32) {
             ShowBox();
             ShowRedBox(0, 3f);
             BoxScale(0.6f);
             RedBoxScale(0.4f);
             ShowRedBoxFacingLine();
             box.transform.position = new Vector2(0, 1.12f);
+        } else if (example == 33) {
+            var startDistance = 1.3f;
+            var yDistance = 0.9f;
+            var sun = CreatePlanet(new Vector3(0, startDistance, 0), 0.8f, new Color32(230, 195, 132, 255));
+            var mercury = CreatePlanet(new Vector3(0, startDistance + yDistance, 0), 0.5f, new Color32(114, 113, 105, 255));
+            var venus = CreatePlanet(new Vector3(0, startDistance + (yDistance*2), 0), 0.55f, new Color32(255, 195, 93, 98));
+            var earth = CreatePlanet(new Vector3(0, startDistance + (yDistance*3), 0), 0.65f, new Color32(152, 187, 108, 255));
+            var mars = CreatePlanet(new Vector3(0, startDistance + (yDistance*4), 0), 0.7f, new Color32(255, 160, 102, 255));
+
+            planets.Add(sun);
+            planets.Add(mercury);
+            planets.Add(venus);
+            planets.Add(earth);
+            planets.Add(mars);
         }
     }
     // Example 1
@@ -513,11 +545,41 @@ public class Movement : MonoBehaviour
             ShowRotation(box.transform.rotation.eulerAngles.z);
         }
         if (example == 30) {
+            ShowBoxFacingLine();
 
-            var degrees = 30;
-            redBox.transform.RotateAround(box.transform.position, Vector3.forward, degrees * Time.deltaTime);
+            var rotationSpeed = 30;
+            redBox.transform.RotateAround(box.transform.position, Vector3.forward, rotationSpeed * Time.deltaTime);
 
             ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        }
+        if (example == 31) {
+            ShowBoxFacingLine();
+
+            var rotationSpeed = 30;
+            Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+            redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
+
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        }
+        if (example == 32) {
+            ShowBoxFacingLine();
+
+            var rotationSpeed = 30;
+            Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+            box.transform.rotation = Quaternion.LookRotation(Vector3.back, rotateVectorToTarget);
+            redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
+
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        }
+        if (example == 33) {
+            OrbitAround(planets[1], planets[0], 40);
+            OrbitAround(planets[2], planets[0], 50);
+            OrbitAround(planets[3], planets[0], 80);
+            OrbitAround(planets[4], planets[0], 20);
         }
     }
     void FixedUpdate() { 
@@ -698,7 +760,28 @@ public class Movement : MonoBehaviour
         } else {
             keyImage.GetComponent<Image>().color = new Color32(255,255,225,255);
         }
+    }
 
-        
+    private void SetSpriteRendererColor(GameObject gameObject, Color32 color) { 
+        gameObject.GetComponent<SpriteRenderer>().color = color;
+    }
+    private void ScaleObject(GameObject gameObject,float size) { 
+        gameObject.transform.localScale = new Vector3(size, size, size);
+    }
+
+    private GameObject CreatePlanet(Vector3 position, float size, Color32 color) { 
+        var planet = Instantiate(emptyCircle, position, Quaternion.identity);
+        planet.transform.parent = exampleWrapper.transform;
+        ScaleObject(planet, size);
+        SetSpriteRendererColor(planet, color);
+        planet.active = true;
+        return planet;
+    }
+
+    private void OrbitAround(GameObject planet, GameObject planetToOrbitAround, float rotationSpeed) { 
+        Vector3 vectorToTarget = planetToOrbitAround.transform.position - planet.transform.position;
+        Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+        planet.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+        planet.transform.RotateAround(planetToOrbitAround.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
     }
 }
