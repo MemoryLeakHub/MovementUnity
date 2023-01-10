@@ -2,14 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Movement : MonoBehaviour
 {
     public GameObject box;
-    public GameObject boxPhysics;
+    public Rigidbody2D boxPhysicsRb;
     public GameObject redBox;
     public GameObject blueBox;
     public GameObject boxFacingLine;
+
+    public GameObject keys;
+    public GameObject topKey;
+    public GameObject rightKey;
+    public GameObject bottomKey;
+    public GameObject leftKey;
+
+    public GameObject physicsBox;
+    public GameObject physicsRedBox;
+    public GameObject physicsGround;
+    public GameObject physicsRedPlatform;
+    public Rigidbody2D physicsRedPlatformRb;
     
     public GameObject distanceGroup;
     public GameObject timerGroup;
@@ -22,11 +35,18 @@ public class Movement : MonoBehaviour
     private bool start = false;
     private int example = 0;
     private Vector3 boxStartPosition = new Vector3(0,0,0);
+    private Vector2 movementDirection;
     public void ResetPosition() {
         HideFacingLine();
+        physicsBox.active = false;
+        physicsGround.active = false;
+        physicsRedBox.active = false;
+        physicsRedBox.transform.position = new Vector2(-5.72f, 0.46f);
+        physicsRedPlatform.active = false;
+        physicsRedPlatform.transform.position = new Vector2(-5.72f, 0.46f);
+        
         box.active = false;
         box.transform.rotation = Quaternion.identity;
-        boxPhysics.active = false;
         start = false;
         visualDistance = 0;
         distanceGroup.active = false;
@@ -38,6 +58,7 @@ public class Movement : MonoBehaviour
         timerText.gameObject.active = false;
         box.transform.position = new Vector2(-5.72f, 1.12f);
         redBox.transform.position = new Vector2(-5.72f, 1.12f);
+        keys.active = false;
     }
     public void Trigger() { 
         boxStartPosition = box.transform.position;
@@ -116,6 +137,30 @@ public class Movement : MonoBehaviour
     // * Show - Red Box
     // ** Vector3.Lerp - returns Vector3, from target to target
     // ** BounceOut - changes the time value
+    // Example 21 = transform.Translate onUpdate
+    // * Show - Red Box, Keys
+    // ** MovementDirection
+    // ** Doesn't Interact with objects
+    // Example 22 = FixedUpdate
+    // * Show - Red Box Physics, Keys
+    // ** MovementDirection AddForce
+    // ** Interacts with objects
+    // Example 23 = FixedUpdate
+    // * Show - Red Box Physics, Keys
+    // ** MovementDirection Velocity
+    // ** Interacts with objects
+    // ** No accelaration we just add speed
+    // Example 24 = FixedUpdate
+    // * Show - Red Box Physics, Keys
+    // ** MovementDirection MovePosition
+    // ** Interacts with objects
+    // ** Explanation - https://www.reddit.com/r/Unity3D/comments/ph75yy/rigidbody_moveposition_or_addforce/
+    // Example 25 = FixedUpdate
+    // * Show - Red Platform Physics, Keys
+    // ** MovementDirection MovePosition for Platform, Kinetic platform
+    // ** Velocity for Box
+    // ** Interacts with objects
+    // ** Explanation - https://www.reddit.com/r/Unity3D/comments/ph75yy/rigidbody_moveposition_or_addforce/
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -129,8 +174,18 @@ public class Movement : MonoBehaviour
         example = value;
         exampleValue.text = example.ToString();
 
-        if (example >= 0 && example <= 20) { 
+        var physicsExamples_1 = new List<int> {22,23,24};
+        var physicsExamples_2 = new List<int> {25};
+        if (example >= 0 && example <= 21) { 
             ShowBox();
+        } else if (physicsExamples_1.Contains(example)) {
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowRedBoxPhysics(2);
+        } else if (physicsExamples_2.Contains(example)) {
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowRedPlatformPhysics(2);
         }
     }
     // Example 1
@@ -156,6 +211,11 @@ public class Movement : MonoBehaviour
         if (!start) {
             return;
         }
+        // 0 - neutral
+        // -1 to 1 values
+        // Horizontal: Left = -1, Right = 1
+        // Vertical: Bottom = -1, Top = 1
+        movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         timeElapsed += Time.deltaTime;
         if (example == 3) {
             box.transform.position += new Vector3(2 * Time.deltaTime,0);   
@@ -375,6 +435,48 @@ public class Movement : MonoBehaviour
             }
             ShowTimer();
         }
+        if (example == 21) {
+            ShowRedBox(2);
+            ShowKeys();
+            
+            box.transform.Translate(movementDirection * 2 * Time.deltaTime);
+        }
+    }
+    void FixedUpdate() { 
+        if (!start) {
+            return;
+        }
+
+        if (example == 22) {
+            ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.AddForce(movementDirection * speed);
+        }
+        if (example == 23) {
+            ShowKeys();
+            
+            var speed = 10f;
+            boxPhysicsRb.velocity = movementDirection * speed;
+        }
+        if (example == 24) {
+            ShowKeys();
+            
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+        }
+        if (example == 25) {
+            ShowKeys();
+            
+            var speed = 2f;
+            float time = Mathf.PingPong(timeElapsed*speed, 1);
+            Vector3 startPosition = new Vector2(1,0);
+            Vector3 endPosition = new Vector2(3,0);
+            Vector3 position = Vector3.Lerp(startPosition, endPosition, time);
+            physicsRedPlatformRb.MovePosition(position);
+            
+            var boxSpeed = 10f;
+            boxPhysicsRb.velocity = movementDirection * boxSpeed;
+       }
     }
     private void SetDistance(float dist) { 
         visualDistance = dist;
@@ -397,7 +499,26 @@ public class Movement : MonoBehaviour
         box.active = true;
     }
     private void ShowPhysicsBox() { 
-        boxPhysics.active = true;
+        physicsBox.active = true;
+    }
+    private void ShowPhysicsGround() { 
+        physicsGround.active = true;
+    }
+    private void ShowRedPlatformPhysics(float x) { 
+        physicsRedPlatform.active = true;
+        physicsRedPlatform.transform.position = new Vector2(x, physicsRedBox.transform.position.y);
+    }
+    private void ShowRedPlatformPhysics(float x, float y) { 
+        physicsRedPlatform.active = true;
+        physicsRedPlatform.transform.position = new Vector2(x, y);
+    }
+    private void ShowRedBoxPhysics(float x) { 
+        physicsRedBox.active = true;
+        physicsRedBox.transform.position = new Vector2(x, physicsRedBox.transform.position.y);
+    }
+    private void ShowRedBoxPhysics(float x, float y) { 
+        physicsRedBox.active = true;
+        physicsRedBox.transform.position = new Vector2(x, y);
     }
     // Show Destination
     private void ShowRedBox(float x) { 
@@ -449,5 +570,27 @@ public class Movement : MonoBehaviour
     private float BounceInOut (float k) {
         if (k < 0.5f) return BounceIn(k*2f)*0.5f;
         return BounceOut(k*2f - 1f)*0.5f + 0.5f;
+    }
+
+    private void ShowKeys() { 
+        keys.active = true;
+
+        bool showTop = (movementDirection.y > 0);
+        SetKeyColor(topKey, showTop);
+        bool showBottom = (movementDirection.y < 0);
+        SetKeyColor(bottomKey, showBottom);
+        bool showLeft = (movementDirection.x < 0);
+        SetKeyColor(leftKey, showLeft);
+        bool showRight = (movementDirection.x > 0);
+        SetKeyColor(rightKey, showRight);
+    }
+    private void SetKeyColor(GameObject keyImage, bool select) { 
+        if (select) {
+            keyImage.GetComponent<Image>().color = new Color32(152,187,108,255);
+        } else {
+            keyImage.GetComponent<Image>().color = new Color32(255,255,225,255);
+        }
+
+        
     }
 }
