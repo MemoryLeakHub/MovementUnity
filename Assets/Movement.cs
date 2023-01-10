@@ -11,6 +11,7 @@ public class Movement : MonoBehaviour
     public GameObject redBox;
     public GameObject blueBox;
     public GameObject boxFacingLine;
+    public GameObject redBoxFacingLine;
 
     public GameObject keys;
     public GameObject topKey;
@@ -24,10 +25,12 @@ public class Movement : MonoBehaviour
     public GameObject physicsRedPlatform;
     public Rigidbody2D physicsRedPlatformRb;
     
+    public GameObject rotationGroup;
     public GameObject distanceGroup;
     public GameObject timerGroup;
     public TMP_Text timerText;
     public TMP_Text distanceText;
+    public TMP_Text rotationText;
     public TMP_Text exampleValue;
     private float visualTime = 0.0f;
     private float visualDistance = 0.0f;
@@ -37,6 +40,7 @@ public class Movement : MonoBehaviour
     private Vector3 boxStartPosition = new Vector3(0,0,0);
     private Vector2 movementDirection;
     public void ResetPosition() {
+        HideRedBoxFacingLine();
         HideFacingLine();
         physicsBox.active = false;
         physicsGround.active = false;
@@ -46,11 +50,14 @@ public class Movement : MonoBehaviour
         physicsRedPlatform.transform.position = new Vector2(-5.72f, 0.46f);
         
         box.active = false;
+        // Set no rotation to our object
         box.transform.rotation = Quaternion.identity;
         start = false;
         visualDistance = 0;
         distanceGroup.active = false;
         distanceText.gameObject.active = false;
+        rotationGroup.active = false;
+        rotationText.gameObject.active = false;
         timeElapsed = 0;
         visualTime = 0;
         timerGroup.active = false;
@@ -161,6 +168,25 @@ public class Movement : MonoBehaviour
     // ** Velocity for Box
     // ** Interacts with objects
     // ** Explanation - https://www.reddit.com/r/Unity3D/comments/ph75yy/rigidbody_moveposition_or_addforce/
+    // ** Explanation 2 - https://youtu.be/fcKGqxUuENk?t=1198
+    // Quaternion  : https://answers.unity.com/questions/765683/when-to-use-quaternion-vs-euler-angles.html
+    // https://forum.unity.com/threads/rotating-a-2d-object.483830/
+    // https://www.youtube.com/watch?v=hd1QzLf4ZH8&list=LL&index=1
+    // Example 26 = transform.Rotation onUpdate
+    // * Show - Red Box
+    // ** Quaternion.Euler
+    // Example 27 = transform.Rotation onUpdate
+    // * Show - Red Box Vertical Animation, ShowRotation
+    // ** Quaternion.LookRotation
+    // ** Direction - Vector3.Up
+    // Example 28 = transform.Rotation onUpdate
+    // * Show - Red Box Vertical Animation, ShowRotation
+    // ** Quaternion.FromToRotation
+    // Example 29 = Angle onUpdate
+    // * Show - Red Box, ShowRotation
+    // ** Quaternion.AngleAxis
+    // Example 30 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -176,7 +202,8 @@ public class Movement : MonoBehaviour
 
         var physicsExamples_1 = new List<int> {22,23,24};
         var physicsExamples_2 = new List<int> {25};
-        if (example >= 0 && example <= 21) { 
+        var rotationExamples_1 = new List<int> {26,27,28, 29};
+        if (example >= 0 && example <= 21 || rotationExamples_1.Contains(example)) { 
             ShowBox();
         } else if (physicsExamples_1.Contains(example)) {
             ShowPhysicsBox();
@@ -186,6 +213,13 @@ public class Movement : MonoBehaviour
             ShowPhysicsBox();
             ShowPhysicsGround();
             ShowRedPlatformPhysics(2);
+        } else if (example == 30) {
+            ShowBox();
+            ShowRedBox(0, 3f);
+            BoxScale(0.6f);
+            RedBoxScale(0.4f);
+            ShowRedBoxFacingLine();
+            box.transform.position = new Vector2(0, 1.12f);
         }
     }
     // Example 1
@@ -441,6 +475,50 @@ public class Movement : MonoBehaviour
             
             box.transform.Translate(movementDirection * 2 * Time.deltaTime);
         }
+        if (example == 26) {
+            ShowBoxFacingLine();
+            // rotating the z axis because we are in 2D
+            var degrees = 30;
+            box.transform.rotation = Quaternion.Euler(Vector3.forward * degrees);
+            ShowRotation(degrees);
+        }
+        if (example == 27) {
+            ShowBoxFacingLine();
+            MoveRedBoxVertical(2f, 0.1f);
+
+            Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
+            // When rotated by 90 degress we define our Upwards direction
+            // At 0 degrees the object points at the right side
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            box.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        }
+        if (example == 28) {
+            ShowBoxFacingLine();
+            MoveRedBoxVertical(2f, 0.1f);
+
+            Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
+            //Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            // The axis that we specify follows the target
+            // In our case Vector.right is X axis so we want it to follow the Target
+            box.transform.rotation = Quaternion.FromToRotation(Vector3.right, vectorToTarget);
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        }
+        if (example == 29) {
+
+            var degrees = 30;
+            box.transform.rotation = Quaternion.AngleAxis(degrees, Vector3.forward);
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        }
+        if (example == 30) {
+
+            var degrees = 30;
+            redBox.transform.RotateAround(box.transform.position, Vector3.forward, degrees * Time.deltaTime);
+
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        }
     }
     void FixedUpdate() { 
         if (!start) {
@@ -478,8 +556,19 @@ public class Movement : MonoBehaviour
             boxPhysicsRb.velocity = movementDirection * boxSpeed;
        }
     }
+    private void BoxScale(float size) { 
+        box.transform.localScale = new Vector3(size,size,size);
+    }
+    private void RedBoxScale(float size) { 
+        redBox.transform.localScale = new Vector3(size,size,size);
+    }
     private void SetDistance(float dist) { 
         visualDistance = dist;
+    }
+    private void ShowRotation(float degrees) { 
+        rotationGroup.active = true;
+        rotationText.gameObject.active = true;
+        rotationText.text = ((int)degrees).ToString();
     }
     private void ShowDistance() { 
         distanceGroup.active = true;
@@ -494,7 +583,14 @@ public class Movement : MonoBehaviour
         timerText.text = visualTime.ToString("f2");
     }
 
-
+    private void MoveRedBoxVertical(float start, float end) { 
+        var speed = 2f;
+        float time = Mathf.PingPong(timeElapsed*speed, 1);
+        Vector3 startPosition = new Vector2(0,start);
+        Vector3 endPosition = new Vector2(0,end);
+        Vector3 position = Vector3.Lerp(startPosition, endPosition, time);
+        ShowRedBox(position);
+    }
     private void ShowBox() { 
         box.active = true;
     }
@@ -521,6 +617,11 @@ public class Movement : MonoBehaviour
         physicsRedBox.transform.position = new Vector2(x, y);
     }
     // Show Destination
+    private void ShowRedBox(Vector3 vector) { 
+        redBox.active = true;
+        redBox.transform.position = vector;
+    }
+    // Show Destination
     private void ShowRedBox(float x) { 
         redBox.active = true;
         redBox.transform.position = new Vector2(x, redBox.transform.position.y);
@@ -543,6 +644,13 @@ public class Movement : MonoBehaviour
         boxFacingLine.active = false;
     }
 
+    private void ShowRedBoxFacingLine() { 
+        redBoxFacingLine.active = true;
+    }
+    
+    private void HideRedBoxFacingLine() {  
+        redBoxFacingLine.active = false;
+    }
     // Easing Functions: https://gist.github.com/Fonserbc/3d31a25e87fdaa541ddf
     private float EaseIn(float k) {
         return k*k*k;
