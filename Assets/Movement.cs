@@ -14,11 +14,13 @@ public class Movement : MonoBehaviour
     public GameObject redBoxFacingLine;
     public GameObject emptyCircle;
 
+    public SpriteRenderer backgroundSR;
     public GameObject keys;
     public GameObject topKey;
     public GameObject rightKey;
     public GameObject bottomKey;
     public GameObject leftKey;
+    public GameObject camera;
 
     public GameObject physicsBox;
     public GameObject physicsRedBox;
@@ -42,13 +44,19 @@ public class Movement : MonoBehaviour
     private Vector2 movementDirection;
     public GameObject exampleWrapper;
     private List<GameObject> planets = new List<GameObject>();
+    private Vector3 cameraStartPosition;
+    void Start() {
+        cameraStartPosition = camera.transform.position;
+    }
     public void ResetPosition() {
+        SetExample(0);
         planets.Clear();
         foreach (Transform child in exampleWrapper.transform) {
             GameObject.Destroy(child.gameObject);
         }
         HideRedBoxFacingLine();
         HideFacingLine();
+        camera.transform.position = cameraStartPosition;
         physicsBox.active = false;
         physicsGround.active = false;
         physicsRedBox.active = false;
@@ -204,7 +212,28 @@ public class Movement : MonoBehaviour
     // * Show - Red Box, ShowRotation
     // ** Rotate Clockwise with Vector.back
     // ** RedBox look at object
+    // Example 32 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
+    // ** Rotate Clockwise with Vector.back
+    // ** RedBox look at object
     // ** Middle Box looks at RedBox 
+    // Example 33 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
+    // ** Planets rotation
+    // Example 34 = Camera position onUpdate
+    // * Show - Keys
+    // ** Camera follow player
+    // Example 35 = Camera position onUpdate
+    // * Show - Keys
+    // ** Camera smooth follow player
+    // Example 36 = Camera position onUpdate
+    // * Show - Keys
+    // ** Camera smooth follow player
+    // ** Follow after player reaches some point
+    // Example 37 = Camera position onUpdate
+    // * Show - Keys
+    // ** Camera smooth follow player
+    // ** Camera bounds
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -252,7 +281,10 @@ public class Movement : MonoBehaviour
             planets.Add(venus);
             planets.Add(earth);
             planets.Add(mars);
-        }
+        } else if (example == 34 || example == 35 || example == 36 || example == 37) {
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+        } 
     }
     // Example 1
     // transform.position - set the position anywhere in the map
@@ -617,7 +649,59 @@ public class Movement : MonoBehaviour
             var boxSpeed = 10f;
             boxPhysicsRb.velocity = movementDirection * boxSpeed;
        }
+        if (example == 34) {
+            ShowKeys();
+
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+            camera.transform.position = new Vector3 (physicsBox.transform.position.x, physicsBox.transform.position.y, 0); 
+        }
+
+        if (example == 35) {
+            ShowKeys();
+
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+        }
+
+        if (example == 36) {
+            ShowKeys();
+
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+        }
+        if (example == 37) {
+            ShowKeys();
+
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+        }
     }
+     void LateUpdate()
+    {
+        if (example == 35) {
+            Vector3 velocity = Vector3.zero;
+            camera.transform.position = Vector3.SmoothDamp(camera.transform.position, boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
+        }
+        if (example == 36) {
+            Vector3 velocity = Vector3.zero;
+            var distance = Vector3.Distance(camera.transform.position, boxPhysicsRb.gameObject.transform.position);
+            if (distance > 2f) {
+                camera.transform.position = Vector3.SmoothDamp(camera.transform.position, boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
+            }
+        }
+        if (example == 37) {
+            Vector3 velocity = Vector3.zero;
+            Vector3 bounds = new Vector3(
+                Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.x, -4f, 4f),
+                Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.y, -4f, 4f),
+                boxPhysicsRb.gameObject.transform.position.z
+            );
+            camera.transform.position = Vector3.SmoothDamp(camera.transform.position, bounds, ref velocity, 0.06f);
+        
+        }
+    }
+
     private void BoxScale(float size) { 
         box.transform.localScale = new Vector3(size,size,size);
     }
