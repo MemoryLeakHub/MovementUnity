@@ -45,6 +45,7 @@ public class Movement : MonoBehaviour
     public GameObject exampleWrapper;
     private List<GameObject> planets = new List<GameObject>();
     private Vector3 cameraStartPosition;
+    public GameObject shootGO;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -234,6 +235,9 @@ public class Movement : MonoBehaviour
     // * Show - Keys
     // ** Camera smooth follow player
     // ** Camera bounds
+    // Example 37 = Rotate with Keys onUpdate
+    // * Show - Keys, Rotation
+    // ** Rotate with Keys
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -284,6 +288,8 @@ public class Movement : MonoBehaviour
         } else if (example == 34 || example == 35 || example == 36 || example == 37) {
             ShowPhysicsBox();
             ShowPhysicsGround();
+        } else if (example == 38) {
+            ShowBox();
         } 
     }
     // Example 1
@@ -612,6 +618,16 @@ public class Movement : MonoBehaviour
             OrbitAround(planets[2], planets[0], 50);
             OrbitAround(planets[3], planets[0], 80);
             OrbitAround(planets[4], planets[0], 20);
+        }
+        
+        if (example == 38) {
+            ShowBoxFacingLine();
+
+            var rotationSpeed = 10;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
         }
     }
     void FixedUpdate() { 
