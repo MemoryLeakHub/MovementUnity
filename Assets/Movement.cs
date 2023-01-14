@@ -13,6 +13,7 @@ public class Movement : MonoBehaviour
     public GameObject boxFacingLine;
     public GameObject redBoxFacingLine;
     public GameObject emptyCircle;
+    public GameObject bulletPref;
 
     public SpriteRenderer backgroundSR;
     public GameObject keys;
@@ -23,6 +24,7 @@ public class Movement : MonoBehaviour
     public GameObject camera;
 
     public GameObject physicsBox;
+    public Rigidbody2D physicsBoxRb;
     public GameObject physicsRedBox;
     public GameObject physicsGround;
     public GameObject physicsRedPlatform;
@@ -46,6 +48,9 @@ public class Movement : MonoBehaviour
     private List<GameObject> planets = new List<GameObject>();
     private Vector3 cameraStartPosition;
     public GameObject shootGO;
+    private float gravity;
+    private float physicsTime;
+
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -133,7 +138,7 @@ public class Movement : MonoBehaviour
     // * Show - Red Box, Distance
     // ** Direction based on Magnitude
     // ** Get starting box position on Trigger
-    // ** Move for X Seconds to Detination
+    // ** Move for X Seconds to Destination
     // ** Calculate Speed based on Distance/Time
     // Example 14 = transform.position onUpdate
     // * Show - Red Box
@@ -172,15 +177,19 @@ public class Movement : MonoBehaviour
     // ** Interacts with objects
     // Example 23 = FixedUpdate
     // * Show - Red Box Physics, Keys
+    // ** Jump AddForce Impolse
+    // ** Interacts with objects
+    // Example 24 = FixedUpdate
+    // * Show - Red Box Physics, Keys
     // ** MovementDirection Velocity
     // ** Interacts with objects
     // ** No accelaration we just add speed
-    // Example 24 = FixedUpdate
+    // Example 25 = FixedUpdate
     // * Show - Red Box Physics, Keys
     // ** MovementDirection MovePosition
     // ** Interacts with objects
     // ** Explanation - https://www.reddit.com/r/Unity3D/comments/ph75yy/rigidbody_moveposition_or_addforce/
-    // Example 25 = FixedUpdate
+    // Example 26 = FixedUpdate
     // * Show - Red Platform Physics, Keys
     // ** MovementDirection MovePosition for Platform, Kinetic platform
     // ** Velocity for Box
@@ -190,54 +199,54 @@ public class Movement : MonoBehaviour
     // Quaternion  : https://answers.unity.com/questions/765683/when-to-use-quaternion-vs-euler-angles.html
     // https://forum.unity.com/threads/rotating-a-2d-object.483830/
     // https://www.youtube.com/watch?v=hd1QzLf4ZH8&list=LL&index=1
-    // Example 26 = transform.Rotation onUpdate
+    // Example 27 = transform.Rotation onUpdate
     // * Show - Red Box
     // ** Quaternion.Euler
-    // Example 27 = transform.Rotation onUpdate
+    // Example 28 = transform.Rotation onUpdate
     // * Show - Red Box Vertical Animation, ShowRotation
     // ** Quaternion.LookRotation
     // ** Direction - Vector3.Up
-    // Example 28 = transform.Rotation onUpdate
+    // Example 29 = transform.Rotation onUpdate
     // * Show - Red Box Vertical Animation, ShowRotation
     // ** Quaternion.FromToRotation
-    // Example 29 = Angle onUpdate
+    // Example 30 = Angle onUpdate
     // * Show - Red Box, ShowRotation
     // ** Quaternion.AngleAxis
-    // Example 30 = RotateAround onUpdate
-    // * Show - Red Box, ShowRotation
     // Example 31 = RotateAround onUpdate
     // * Show - Red Box, ShowRotation
-    // ** Rotate Clockwise with Vector.back
-    // ** RedBox look at object
-    // Example 31 = RotateAround onUpdate
-    // * Show - Red Box, ShowRotation
-    // ** Rotate Clockwise with Vector.back
-    // ** RedBox look at object
     // Example 32 = RotateAround onUpdate
     // * Show - Red Box, ShowRotation
     // ** Rotate Clockwise with Vector.back
     // ** RedBox look at object
-    // ** Middle Box looks at RedBox 
     // Example 33 = RotateAround onUpdate
     // * Show - Red Box, ShowRotation
+    // ** Rotate Clockwise with Vector.back
+    // ** RedBox look at object
+    // ** Middle Box looks at RedBox 
+    // Example 34 = RotateAround onUpdate
+    // * Show - Red Box, ShowRotation
     // ** Planets rotation
-    // Example 34 = Camera position onUpdate
-    // * Show - Keys
-    // ** Camera follow player
     // Example 35 = Camera position onUpdate
     // * Show - Keys
-    // ** Camera smooth follow player
+    // ** Camera follow player
     // Example 36 = Camera position onUpdate
     // * Show - Keys
     // ** Camera smooth follow player
-    // ** Follow after player reaches some point
     // Example 37 = Camera position onUpdate
     // * Show - Keys
     // ** Camera smooth follow player
+    // ** Follow after player reaches some point
+    // Example 38 = Camera position onUpdate
+    // * Show - Keys
+    // ** Camera smooth follow player
     // ** Camera bounds
-    // Example 37 = Rotate with Keys onUpdate
+    // Example 39 = Rotate with Keys onUpdate
     // * Show - Keys, Rotation
     // ** Rotate with Keys
+    // Example 40 = Rotate and Shoot onUpdate
+    // * Show - Keys, Rotation
+    // ** Rotate with Keys
+    // ** Shoot bullets
 
     // Directional Vectors
     // Vector3.right     // (1,  0,  0)
@@ -251,9 +260,9 @@ public class Movement : MonoBehaviour
         example = value;
         exampleValue.text = example.ToString();
 
-        var physicsExamples_1 = new List<int> {22,23,24};
-        var physicsExamples_2 = new List<int> {25};
-        var rotationExamples_1 = new List<int> {26,27,28, 29};
+        var physicsExamples_1 = new List<int> {22,23,24,25};
+        var physicsExamples_2 = new List<int> {26};
+        var rotationExamples_1 = new List<int> {27,28,29,30};
         if (example >= 0 && example <= 21 || rotationExamples_1.Contains(example)) { 
             ShowBox();
         } else if (physicsExamples_1.Contains(example)) {
@@ -264,14 +273,14 @@ public class Movement : MonoBehaviour
             ShowPhysicsBox();
             ShowPhysicsGround();
             ShowRedPlatformPhysics(2);
-        } else if (example == 30 || example == 31 || example == 32) {
+        } else if (example == 31 || example == 32 || example == 33) {
             ShowBox();
             ShowRedBox(0, 3f);
             BoxScale(0.6f);
             RedBoxScale(0.4f);
             ShowRedBoxFacingLine();
             box.transform.position = new Vector2(0, 1.12f);
-        } else if (example == 33) {
+        } else if (example == 34) {
             var startDistance = 1.3f;
             var yDistance = 0.9f;
             var sun = CreatePlanet(new Vector3(0, startDistance, 0), 0.8f, new Color32(230, 195, 132, 255));
@@ -285,12 +294,13 @@ public class Movement : MonoBehaviour
             planets.Add(venus);
             planets.Add(earth);
             planets.Add(mars);
-        } else if (example == 34 || example == 35 || example == 36 || example == 37) {
+        } else if (example == 35 || example == 36 || example == 37 || example == 38) {
             ShowPhysicsBox();
             ShowPhysicsGround();
-        } else if (example == 38) {
+        } else if (example == 39 || example == 40) {
             ShowBox();
-        } 
+            ShowBoxFacingLine();
+        }
     }
     // Example 1
     // transform.position - set the position anywhere in the map
@@ -321,21 +331,27 @@ public class Movement : MonoBehaviour
         // Vertical: Bottom = -1, Top = 1
         movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         timeElapsed += Time.deltaTime;
+        
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
+            Debug.Log("GetKeyDown");
+            if (example == 23) {
+                Example_Jump();
+            } else if (example == 40) {
+                Example_Shoot();
+            }
+        }
         if (example == 3) {
             box.transform.position += new Vector3(2 * Time.deltaTime,0);   
-        }
-        if (example == 4) {
+        } else if (example == 4) {
             box.transform.position += Vector3.right * 2 * Time.deltaTime;    
-        }
-        if (example == 5) {
+        } else if (example == 5) {
             ShowRedBox(2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
             }
             box.transform.position += Vector3.right * 2 * Time.deltaTime;    
             ShowTimer();
-        }
-        if (example == 6) {
+        } else if (example == 6) {
             ShowBoxFacingLine();
             RotateBox(10);
             ShowRedBox(2);
@@ -344,16 +360,14 @@ public class Movement : MonoBehaviour
             }
             box.transform.position += Vector3.right * 2 * Time.deltaTime;  
             ShowTimer();  
-        }
-        if (example == 7) {
+        } else  if (example == 7) {
             ShowRedBox(2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
             }
             box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
             ShowTimer();
-        }
-        if (example == 8) {
+        } else if (example == 8) {
             ShowBoxFacingLine();
             RotateBox(10);
             ShowRedBox(2);
@@ -362,8 +376,7 @@ public class Movement : MonoBehaviour
             }
             box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
             ShowTimer();
-        }
-        if (example == 9) {
+        } else if (example == 9) {
             ShowRedBox(2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
@@ -377,8 +390,7 @@ public class Movement : MonoBehaviour
 
             ShowTimer();
             ShowDistance();
-        }
-        if (example == 10) {
+        } else if (example == 10) {
             ShowRedBox(2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
@@ -393,8 +405,7 @@ public class Movement : MonoBehaviour
 
             ShowTimer();
             ShowDistance();
-        }
-        if (example == 11) {
+        } else if (example == 11) {
             ShowRedBox(2, 2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
@@ -409,8 +420,7 @@ public class Movement : MonoBehaviour
 
             ShowTimer();
             ShowDistance();
-        }
-        if (example == 12) {
+        } else if (example == 12) {
             ShowRedBox(2, 2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
@@ -426,8 +436,7 @@ public class Movement : MonoBehaviour
 
             ShowTimer();
             ShowDistance();
-        }
-        if (example == 13) {
+        } else if (example == 13) {
             ShowRedBox(2);
             if (box.transform.position.x >= redBox.transform.position.x) {
                 return;
@@ -444,8 +453,7 @@ public class Movement : MonoBehaviour
 
             ShowTimer();
             ShowDistance();
-        }
-        if (example == 14) {
+        } else if (example == 14) {
             ShowRedBox(2);
 
             var speed = 2; // seconds
@@ -454,8 +462,7 @@ public class Movement : MonoBehaviour
             box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
 
             ShowTimer();
-        }
-        if (example == 15) {
+        } else if (example == 15) {
             ShowRedBox(2);
 
             var speed = 2; // seconds
@@ -472,8 +479,7 @@ public class Movement : MonoBehaviour
             }
 
             ShowTimer();
-        }
-        if (example == 16) {
+        } else if (example == 16) {
             ShowRedBox(2);
 
             if (box.transform.position.x >= redBox.transform.position.x) {
@@ -486,8 +492,7 @@ public class Movement : MonoBehaviour
             SetXPosition(x);
             
             ShowTimer();
-        }
-        if (example == 17) {
+        } else if (example == 17) {
             ShowRedBox(2);
 
             var target = redBox.transform.position;
@@ -499,8 +504,7 @@ public class Movement : MonoBehaviour
             }
 
             ShowTimer();
-        }
-        if (example == 18) {
+        } else if (example == 18) {
             ShowRedBox(2);
 
             var target = redBox.transform.position;
@@ -512,8 +516,7 @@ public class Movement : MonoBehaviour
                 return;
             }
             ShowTimer();
-        }
-        if (example == 19) {
+        } else if (example == 19) {
             ShowRedBox(2);
 
             var target = redBox.transform.position;
@@ -525,8 +528,7 @@ public class Movement : MonoBehaviour
                 return;
             }
             ShowTimer();
-        }
-        if (example == 20) {
+        } else if (example == 20) {
             ShowRedBox(2);
 
             var target = redBox.transform.position;
@@ -538,21 +540,18 @@ public class Movement : MonoBehaviour
                 return;
             }
             ShowTimer();
-        }
-        if (example == 21) {
+        } else if (example == 21) {
             ShowRedBox(2);
             ShowKeys();
             
             box.transform.Translate(movementDirection * 2 * Time.deltaTime);
-        }
-        if (example == 26) {
+        } else if (example == 27) {
             ShowBoxFacingLine();
             // rotating the z axis because we are in 2D
             var degrees = 30;
             box.transform.rotation = Quaternion.Euler(Vector3.forward * degrees);
             ShowRotation(degrees);
-        }
-        if (example == 27) {
+        } else if (example == 28) {
             ShowBoxFacingLine();
             MoveRedBoxVertical(2f, 0.1f);
 
@@ -563,8 +562,7 @@ public class Movement : MonoBehaviour
             box.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
-        }
-        if (example == 28) {
+        } else if (example == 29) {
             ShowBoxFacingLine();
             MoveRedBoxVertical(2f, 0.1f);
 
@@ -574,23 +572,20 @@ public class Movement : MonoBehaviour
             // In our case Vector.right is X axis so we want it to follow the Target
             box.transform.rotation = Quaternion.FromToRotation(Vector3.right, vectorToTarget);
             ShowRotation(box.transform.rotation.eulerAngles.z);
-        }
-        if (example == 29) {
+        } else if (example == 30) {
 
             var degrees = 30;
             box.transform.rotation = Quaternion.AngleAxis(degrees, Vector3.forward);
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
-        }
-        if (example == 30) {
+        } else if (example == 31) {
             ShowBoxFacingLine();
 
             var rotationSpeed = 30;
             redBox.transform.RotateAround(box.transform.position, Vector3.forward, rotationSpeed * Time.deltaTime);
 
             ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        }
-        if (example == 31) {
+        } else if (example == 32) {
             ShowBoxFacingLine();
 
             var rotationSpeed = 30;
@@ -600,8 +595,7 @@ public class Movement : MonoBehaviour
             redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
 
             ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        }
-        if (example == 32) {
+        } else if (example == 33) {
             ShowBoxFacingLine();
 
             var rotationSpeed = 30;
@@ -612,19 +606,20 @@ public class Movement : MonoBehaviour
             redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
 
             ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        }
-        if (example == 33) {
+        } else if (example == 34) {
             OrbitAround(planets[1], planets[0], 40);
             OrbitAround(planets[2], planets[0], 50);
             OrbitAround(planets[3], planets[0], 80);
             OrbitAround(planets[4], planets[0], 20);
-        }
-        
-        if (example == 38) {
-            ShowBoxFacingLine();
+        } else if (example == 39) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
 
-            var rotationSpeed = 10;
-            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
+        } else if (example == 40) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
             ShowKeys();
@@ -633,26 +628,23 @@ public class Movement : MonoBehaviour
     void FixedUpdate() { 
         if (!start) {
             return;
-        }
-
-        if (example == 22) {
+        } else if (example == 22) {
             ShowKeys();
             var speed = 10f;
             boxPhysicsRb.AddForce(movementDirection * speed);
-        }
-        if (example == 23) {
+        } else if (example == 23) {
+            ShowKeys();
+        } else if (example == 24) {
             ShowKeys();
             
             var speed = 10f;
             boxPhysicsRb.velocity = movementDirection * speed;
-        }
-        if (example == 24) {
+        } else if (example == 25) {
             ShowKeys();
             
             var speed = 10f;
             boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-        }
-        if (example == 25) {
+        } else if (example == 26) {
             ShowKeys();
             
             var speed = 2f;
@@ -664,49 +656,46 @@ public class Movement : MonoBehaviour
             
             var boxSpeed = 10f;
             boxPhysicsRb.velocity = movementDirection * boxSpeed;
-       }
-        if (example == 34) {
+       } else if (example == 35) {
             ShowKeys();
 
             var speed = 10f;
             boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
             camera.transform.position = new Vector3 (physicsBox.transform.position.x, physicsBox.transform.position.y, 0); 
-        }
-
-        if (example == 35) {
+        } else if (example == 36) {
             ShowKeys();
 
             var speed = 10f;
             boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-        }
-
-        if (example == 36) {
+        } else if (example == 37) {
             ShowKeys();
 
             var speed = 10f;
             boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-        }
-        if (example == 37) {
+        } else if (example == 38) {
             ShowKeys();
 
             var speed = 10f;
             boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-        }
+        } 
     }
-     void LateUpdate()
+    private void Awake()
     {
-        if (example == 35) {
+        gravity = Physics.gravity.magnitude;
+        physicsTime = Time.fixedDeltaTime;
+    }
+    void LateUpdate()
+    {
+        if (example == 36) {
             Vector3 velocity = Vector3.zero;
             camera.transform.position = Vector3.SmoothDamp(camera.transform.position, boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
-        }
-        if (example == 36) {
+        } else if (example == 37) {
             Vector3 velocity = Vector3.zero;
             var distance = Vector3.Distance(camera.transform.position, boxPhysicsRb.gameObject.transform.position);
             if (distance > 2f) {
                 camera.transform.position = Vector3.SmoothDamp(camera.transform.position, boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
             }
-        }
-        if (example == 37) {
+        } else if (example == 38) {
             Vector3 velocity = Vector3.zero;
             Vector3 bounds = new Vector3(
                 Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.x, -4f, 4f),
@@ -714,10 +703,16 @@ public class Movement : MonoBehaviour
                 boxPhysicsRb.gameObject.transform.position.z
             );
             camera.transform.position = Vector3.SmoothDamp(camera.transform.position, bounds, ref velocity, 0.06f);
-        
-        }
+        } 
     }
 
+    private void Example_Jump() {
+        var amount = 6f;
+        physicsBoxRb.AddForce(Vector2.up * amount, ForceMode2D.Impulse);
+    }
+    private void Example_Shoot() {
+        Instantiate(bulletPref, shootGO.transform.position, box.transform.rotation);
+    }
     private void BoxScale(float size) { 
         box.transform.localScale = new Vector3(size,size,size);
     }
