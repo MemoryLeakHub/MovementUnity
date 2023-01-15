@@ -177,7 +177,7 @@ public class Movement : MonoBehaviour
     // ** Interacts with objects
     // Example 23 = FixedUpdate
     // * Show - Red Box Physics, Keys
-    // ** Jump AddForce Impolse
+    // ** MovementDirection Velocity
     // ** Interacts with objects
     // Example 24 = FixedUpdate
     // * Show - Red Box Physics, Keys
@@ -352,6 +352,13 @@ public class Movement : MonoBehaviour
             box.transform.position += Vector3.right * 2 * Time.deltaTime;    
             ShowTimer();
         } else if (example == 6) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
+            ShowTimer();
+        } else if (example == 7) {
             ShowBoxFacingLine();
             RotateBox(10);
             ShowRedBox(2);
@@ -360,13 +367,6 @@ public class Movement : MonoBehaviour
             }
             box.transform.position += Vector3.right * 2 * Time.deltaTime;  
             ShowTimer();  
-        } else  if (example == 7) {
-            ShowRedBox(2);
-            if (box.transform.position.x >= redBox.transform.position.x) {
-                return;
-            }
-            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
-            ShowTimer();
         } else if (example == 8) {
             ShowBoxFacingLine();
             RotateBox(10);
@@ -448,7 +448,6 @@ public class Movement : MonoBehaviour
             var totalTime = 1.5f; // seconds
             var speed = distance / totalTime;
             box.transform.Translate(direction * speed * Time.deltaTime);
-
             SetDistance(distance);
 
             ShowTimer();

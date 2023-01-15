@@ -4123,6 +4123,7 @@ MonoBehaviour:
   leftKey: {fileID: 1765935434}
   camera: {fileID: 519420028}
   physicsBox: {fileID: 122784454}
+  physicsBoxRb: {fileID: 122784457}
   physicsRedBox: {fileID: 447239046}
   physicsGround: {fileID: 741400469}
   physicsRedPlatform: {fileID: 1091077484}
@@ -6638,7 +6639,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 82.54999, y: -103.130005}
-  m_SizeDelta: {x: 131.86, y: 136.76}
+  m_SizeDelta: {x: 138.9, y: 136.76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &863851171
 MonoBehaviour:
