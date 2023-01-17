@@ -4,10 +4,17 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;
+    // From Part 1
+    // public float speed = 10f;
+    // public Rigidbody2D rb;
+    // void Start()
+    // {
+    //     rb.velocity = transform.right * speed;
+    // }
+
+    // Part 2
     public Rigidbody2D rb;
-    void Start()
-    {
-        rb.velocity = transform.right * speed;
+    public void Shoot(float speed) { 
+         rb.velocity = transform.right * speed;
     }
 }
