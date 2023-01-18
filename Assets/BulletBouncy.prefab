@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 291493794372326060}
   - component: {fileID: 4840711399308677684}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: BulletBouncy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,7 +103,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6a6d673c4bae9ae4dac08410d0e5ed2f, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1

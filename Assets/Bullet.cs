@@ -15,6 +15,8 @@ public class Bullet : MonoBehaviour
     // Part 2
     public Rigidbody2D rb;
     public void Shoot(float speed) { 
-         rb.velocity = transform.right * speed;
+        
+        rb.velocity = transform.right * speed;
+        //rb.AddForce(transform.right * speed, ForceMode2D.Impulse);
     }
 }
