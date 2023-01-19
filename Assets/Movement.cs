@@ -49,16 +49,18 @@ public class Movement : MonoBehaviour
     private List<GameObject> planets = new List<GameObject>();
     private Vector3 cameraStartPosition;
     public GameObject shootGO;
-    public Rigidbody2D shootGORb;
     private float gravity;
     private float physicsTime;
 
     public LineRenderer boxLineRenderer;
-    public PhysicsMaterial2D bulletPhysicsMaterial2D;
     public float bulletForce = 10f;
     private float previousBoxRotation = -1f; 
     public Material spriteDefault;
     public Material dottedMaterial;
+    public GameObject cleanBucket;
+    public GameObject normalBulletCollisionPref;
+    public GameObject stopBulletCollisionPref;
+    private List<Collider2D> stopBulletColliders = new();
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -101,6 +103,10 @@ public class Movement : MonoBehaviour
         boxLineRenderer.positionCount = 0;
         boxLineRenderer.material = spriteDefault;
         previousBoxRotation = -1f;
+        stopBulletColliders = new();
+        foreach (Transform child in cleanBucket.transform) {
+            GameObject.Destroy(child.gameObject);
+        }
     }
     public void Trigger() { 
         boxStartPosition = box.transform.position;
@@ -317,17 +323,28 @@ public class Movement : MonoBehaviour
         } else if (example == 41) {
             ShowBox();
             ShowBoxFacingLine();
-            boxLineRenderer.positionCount = 50;
             ShowPhysicsGround();
         } else if (example == 42) {
             ShowBox();
             ShowBoxFacingLine();
-            boxLineRenderer.positionCount = 50;
             ShowPhysicsGround();
         } else if (example == 43) {
             ShowBox();
             ShowBoxFacingLine();
-            boxLineRenderer.positionCount = 50;
+            boxLineRenderer.material = dottedMaterial;
+            ShowPhysicsGround();
+        } else if (example == 44) {
+            ShowBox();
+            ShowBoxFacingLine();
+            boxLineRenderer.material = dottedMaterial;
+            ShowPhysicsGround();
+            NormalBulletCollision(new Vector2(1,0.5f));
+            StopBulletCollision(new Vector2(1,1));
+            NormalBulletCollision(new Vector2(1,1.5f));
+            StopBulletCollision(new Vector2(1,2f));
+        } else if (example == 45) {
+            ShowBox();
+            ShowBoxFacingLine();
             boxLineRenderer.material = dottedMaterial;
             ShowPhysicsGround();
         }
@@ -375,6 +392,10 @@ public class Movement : MonoBehaviour
                 Example_Shoot_3_Bouncy();
             } else if (example == 43) {
                 Example_Shoot_3_Bouncy();
+            } else if (example == 44) {
+                Example_Shoot_3_Bouncy();
+            } else if (example == 45) {
+                Example_Shoot_4_Bouncy_Trail();
             }
         }
         // if (example == 3) {
@@ -660,13 +681,7 @@ public class Movement : MonoBehaviour
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
             ShowKeys();
-        } 
-    }
-    void FixedUpdate() { 
-        if (!start) {
-            return;
-        } 
-         if (example == 41) {
+        } else if (example == 41) {
             var rotationSpeed = 20;
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
@@ -699,8 +714,35 @@ public class Movement : MonoBehaviour
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
             ShowKeys();
+        } else if (example == 44) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
+            
+            if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
+                ShowTrajectoryBouncyCollision();
+                previousBoxRotation = box.transform.rotation.eulerAngles.z;
+            }
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
+        } else if (example == 45) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
+            
+            if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
+                ShowTrajectoryBouncyCollision();
+                previousBoxRotation = box.transform.rotation.eulerAngles.z;
+            }
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
         }
-    //     else if (example == 22) {
+    }
+    void FixedUpdate() { 
+        if (!start) {
+            return;
+        } 
+    //      if (example == 22) {
     //         ShowKeys();
     //         var speed = 10f;
     //         boxPhysicsRb.AddForce(movementDirection * speed);
@@ -806,7 +848,7 @@ public class Movement : MonoBehaviour
         bullet.GetComponent<Bullet>().Shoot(bulletForce);
 
         Physics2D.simulationMode = SimulationMode2D.Script;
-        Vector3[] points = new Vector3[boxLineRenderer.positionCount];
+        Vector3[] points = new Vector3[50];
         boxLineRenderer.positionCount = points.Length;
         for (int i = 0; i < points.Length; i++)
         {
@@ -825,13 +867,45 @@ public class Movement : MonoBehaviour
         bullet.GetComponent<Bullet>().Shoot(bulletForce);
 
         Physics2D.simulationMode = SimulationMode2D.Script;
-        Vector3[] points = new Vector3[boxLineRenderer.positionCount];
+        Vector3[] points = new Vector3[50];
         boxLineRenderer.positionCount = points.Length;
         for (int i = 0; i < points.Length; i++)
         {
             Physics2D.Simulate(Time.fixedDeltaTime);
             points[i] = bullet.transform.position;
         }
+        boxLineRenderer.SetPositions(points);
+
+        Physics2D.simulationMode = SimulationMode2D.FixedUpdate;
+        Destroy(bullet.gameObject);
+    }
+    private bool isBulletToichingStopCollider(Collider2D bulletCollider2D) { 
+         foreach (Collider2D collider in stopBulletColliders) {
+            if (collider.IsTouching(bulletCollider2D)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void ShowTrajectoryBouncyCollision()
+    {
+        var bullet = Instantiate(bulletBouncyPref, shootGO.transform.position, box.transform.rotation);
+        bullet.GetComponent<Bullet>().Shoot(bulletForce);
+        var bulletCollider2D = bullet.GetComponent<Collider2D>();
+
+        Physics2D.simulationMode = SimulationMode2D.Script;
+        Vector3[] points = new Vector3[50];
+        var pointsBeforeCollision = 0;
+        for (int i = 0; i < points.Length; i++)
+        {
+            Physics2D.Simulate(Time.fixedDeltaTime);
+            if (isBulletToichingStopCollider(bulletCollider2D)) {
+                break;
+            }
+            pointsBeforeCollision++;
+            points[i] = bullet.transform.position;
+        }
+        boxLineRenderer.positionCount = pointsBeforeCollision;
         boxLineRenderer.SetPositions(points);
 
         Physics2D.simulationMode = SimulationMode2D.FixedUpdate;
@@ -877,16 +951,39 @@ public class Movement : MonoBehaviour
         GameObject bulletGO = (GameObject) Instantiate(bulletPref.gameObject, shootGO.transform.position, box.transform.rotation);
         Bullet bulletComponent = bulletGO.GetComponent<Bullet>();
         bulletComponent.Shoot(bulletForce);
+        
+        bulletGO.transform.parent = cleanBucket.transform;
     }
     private void Example_Shoot_2() { 
         GameObject bulletGO = (GameObject) Instantiate(bulletPref.gameObject, shootGO.transform.position, box.transform.rotation);
         Bullet bulletComponent = bulletGO.GetComponent<Bullet>();
         bulletComponent.Shoot(bulletForce);
+        
+        bulletGO.transform.parent = cleanBucket.transform;
     }
     private void Example_Shoot_3_Bouncy() { 
         GameObject bulletGO = (GameObject) Instantiate(bulletBouncyPref.gameObject, shootGO.transform.position, box.transform.rotation);
         Bullet bulletComponent = bulletGO.GetComponent<Bullet>();
         bulletComponent.Shoot(bulletForce);
+        
+        bulletGO.transform.parent = cleanBucket.transform;
+    }
+    private void Example_Shoot_4_Bouncy_Trail() { 
+        GameObject bulletGO = (GameObject) Instantiate(bulletBouncyPref.gameObject, shootGO.transform.position, box.transform.rotation);
+        Bullet bulletComponent = bulletGO.GetComponent<Bullet>();
+        bulletComponent.ShowTrail();
+        bulletComponent.Shoot(bulletForce);
+        
+        bulletGO.transform.parent = cleanBucket.transform;
+    }
+    private void StopBulletCollision(Vector2 position) { 
+        GameObject bulletCollision = (GameObject) Instantiate(stopBulletCollisionPref.gameObject, position, Quaternion.identity);
+        bulletCollision.transform.parent = cleanBucket.transform;
+        stopBulletColliders.Add(bulletCollision.GetComponent<Collider2D>());
+    }
+    private void NormalBulletCollision(Vector2 position) { 
+        GameObject bulletCollision = (GameObject) Instantiate(normalBulletCollisionPref.gameObject, position, Quaternion.identity);
+        bulletCollision.transform.parent = cleanBucket.transform;
     }
     private void BoxScale(float size) { 
         box.transform.localScale = new Vector3(size,size,size);
