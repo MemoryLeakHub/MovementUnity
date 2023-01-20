@@ -35,12 +35,21 @@ public class Movement : MonoBehaviour
     public GameObject distanceGroup;
     public GameObject timerGroup;
     public TMP_Text timerText;
+    public GameObject mouseGroup;
+    public GameObject mouse;
+    public GameObject SpaceGroup;
+    public GameObject SpaceKey;
+    public GameObject speedGroup;
+    public TMP_Text spaceLabel;
+    public TMP_Text speedText;
     public TMP_Text distanceText;
     public TMP_Text rotationText;
     public TMP_Text exampleValue;
     private float visualTime = 0.0f;
     private float visualDistance = 0.0f;
     private float timeElapsed = 0.0f;
+    private float speedTimeElapsed = 0.0f;
+    private bool isHoldingSpace = false;
     private bool start = false;
     private int example = 0;
     private Vector3 boxStartPosition = new Vector3(0,0,0);
@@ -61,6 +70,10 @@ public class Movement : MonoBehaviour
     public GameObject normalBulletCollisionPref;
     public GameObject stopBulletCollisionPref;
     private List<Collider2D> stopBulletColliders = new();
+    private float speedLerp = 0f;
+    private Vector3 startPoint;
+    private Vector3 endPoint;
+    private bool dragging = false;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -104,6 +117,10 @@ public class Movement : MonoBehaviour
         boxLineRenderer.material = spriteDefault;
         previousBoxRotation = -1f;
         stopBulletColliders = new();
+        isHoldingSpace = false;
+        SpaceGroup.active = false;
+        speedGroup.active = false;
+        speedLerp = 0f;
         foreach (Transform child in cleanBucket.transform) {
             GameObject.Destroy(child.gameObject);
         }
@@ -347,6 +364,17 @@ public class Movement : MonoBehaviour
             ShowBoxFacingLine();
             boxLineRenderer.material = dottedMaterial;
             ShowPhysicsGround();
+        } else if (example == 46) {
+            ShowBox();
+            ShowBoxFacingLine();
+            spaceLabel.text = "HOLD SPACE";
+            boxLineRenderer.material = dottedMaterial;
+            ShowPhysicsGround();
+        } else if (example == 47) {
+            ShowBox();
+            ShowBoxFacingLine();
+            boxLineRenderer.material = dottedMaterial;
+            ShowPhysicsGround();
         }
     }
     // Example 1
@@ -368,6 +396,9 @@ public class Movement : MonoBehaviour
     private void Example2()  { 
         TranslateX(2);
     }
+
+    private Vector3 mouseStartDragPosition;
+    private Vector3 mouseCurrentDragPosition;
     void Update() { 
         if (!start) {
             return;
@@ -378,7 +409,14 @@ public class Movement : MonoBehaviour
         // Vertical: Bottom = -1, Top = 1
         movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         timeElapsed += Time.deltaTime;
-        
+        if (Input.GetMouseButtonDown(0)) {
+            mouseStartDragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseCurrentDragPosition = mouseStartDragPosition;
+            dragging = true;
+        } else if (Input.GetMouseButtonUp(0)) { 
+            dragging = false;
+        }
+       
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
             Debug.Log("GetKeyDown");
             // if (example == 23) {
@@ -395,9 +433,25 @@ public class Movement : MonoBehaviour
             } else if (example == 44) {
                 Example_Shoot_3_Bouncy();
             } else if (example == 45) {
-                Example_Shoot_4_Bouncy_Trail();
+                Example_Shoot_4_Bouncy_Trail(bulletForce);
+            } else if (example == 46) {
+                Example_Shoot_4_Bouncy_Trail(speedLerp);
+            } else if (example == 47) {
+                Example_Shoot_4_Bouncy_Trail(speedLerp);
             }
         }
+        
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            speedTimeElapsed = 0;
+            isHoldingSpace = true;
+        }
+        if (Input.GetKeyUp(KeyCode.Space)) {
+            isHoldingSpace = false;
+        }
+        if (isHoldingSpace) {
+            speedTimeElapsed += Time.deltaTime;
+        }
+            
         // if (example == 3) {
         //     box.transform.position += new Vector3(2 * Time.deltaTime,0);   
         // } else if (example == 4) {
@@ -686,7 +740,7 @@ public class Movement : MonoBehaviour
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
             if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
-                ShowTrajectory();
+                ShowTrajectory(bulletForce);
                 previousBoxRotation = box.transform.rotation.eulerAngles.z;
             }
 
@@ -697,7 +751,7 @@ public class Movement : MonoBehaviour
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
             if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
-                ShowTrajectoryBouncy();
+                ShowTrajectoryBouncy(bulletForce);
                 previousBoxRotation = box.transform.rotation.eulerAngles.z;
             }
 
@@ -708,7 +762,7 @@ public class Movement : MonoBehaviour
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
             if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
-                ShowTrajectoryBouncy();
+                ShowTrajectoryBouncy(bulletForce);
                 previousBoxRotation = box.transform.rotation.eulerAngles.z;
             }
 
@@ -719,7 +773,7 @@ public class Movement : MonoBehaviour
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
             if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
-                ShowTrajectoryBouncyCollision();
+                ShowTrajectoryBouncyCollision(bulletForce);
                 previousBoxRotation = box.transform.rotation.eulerAngles.z;
             }
 
@@ -730,13 +784,51 @@ public class Movement : MonoBehaviour
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
             
             if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
-                ShowTrajectoryBouncyCollision();
+                ShowTrajectoryBouncyCollision(bulletForce);
                 previousBoxRotation = box.transform.rotation.eulerAngles.z;
             }
 
             ShowRotation(box.transform.rotation.eulerAngles.z);
             ShowKeys();
-        }
+        } else if (example == 46) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
+            
+            if (previousBoxRotation != box.transform.rotation.eulerAngles.z || isHoldingSpace) {
+                var totalTime = 2f;
+                speedLerp = Mathf.Lerp(0, bulletForce, speedTimeElapsed / totalTime);
+                ShowTrajectoryBouncy(speedLerp);
+                previousBoxRotation = box.transform.rotation.eulerAngles.z;
+            }
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
+            ShowSpaceKey();
+            ShowForceSpeed();
+        } else if (example == 47) {
+             if (dragging) {
+                var rotationSpeed = 20f;
+                var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mouseCurrentDragPosition = mousePosition;
+                float yAxis = mousePosition.y * rotationSpeed;
+                box.transform.Rotate(Vector3.forward * yAxis * Time.deltaTime);
+            }
+            if (previousBoxRotation != box.transform.rotation.eulerAngles.z) {
+                var maxDrag = 2f;
+                var maxSpeed = 10f;
+                var drag = Mathf.Clamp(mouseStartDragPosition.x - mouseCurrentDragPosition.x, 0, maxDrag);
+                var currentSpeed = drag/maxDrag*maxSpeed;
+                ShowTrajectoryBouncyCollision(currentSpeed);
+                previousBoxRotation = box.transform.rotation.eulerAngles.z;
+
+                speedLerp = currentSpeed;
+            }
+
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
+            ShowMouse(dragging);
+            ShowForceSpeed();
+        } 
     }
     void FixedUpdate() { 
         if (!start) {
@@ -842,10 +934,10 @@ public class Movement : MonoBehaviour
         // } 
     }
 
-    public void ShowTrajectory()
+    public void ShowTrajectory(float force)
     {
         var bullet = Instantiate(bulletPref, shootGO.transform.position, box.transform.rotation);
-        bullet.GetComponent<Bullet>().Shoot(bulletForce);
+        bullet.GetComponent<Bullet>().Shoot(force);
 
         Physics2D.simulationMode = SimulationMode2D.Script;
         Vector3[] points = new Vector3[50];
@@ -861,10 +953,10 @@ public class Movement : MonoBehaviour
         Destroy(bullet.gameObject);
     }
     
-    public void ShowTrajectoryBouncy()
+    public void ShowTrajectoryBouncy(float force)
     {
         var bullet = Instantiate(bulletBouncyPref, shootGO.transform.position, box.transform.rotation);
-        bullet.GetComponent<Bullet>().Shoot(bulletForce);
+        bullet.GetComponent<Bullet>().Shoot(force);
 
         Physics2D.simulationMode = SimulationMode2D.Script;
         Vector3[] points = new Vector3[50];
@@ -887,10 +979,10 @@ public class Movement : MonoBehaviour
         }
         return false;
     }
-    public void ShowTrajectoryBouncyCollision()
+    public void ShowTrajectoryBouncyCollision(float force)
     {
         var bullet = Instantiate(bulletBouncyPref, shootGO.transform.position, box.transform.rotation);
-        bullet.GetComponent<Bullet>().Shoot(bulletForce);
+        bullet.GetComponent<Bullet>().Shoot(force);
         var bulletCollider2D = bullet.GetComponent<Collider2D>();
 
         Physics2D.simulationMode = SimulationMode2D.Script;
@@ -968,11 +1060,11 @@ public class Movement : MonoBehaviour
         
         bulletGO.transform.parent = cleanBucket.transform;
     }
-    private void Example_Shoot_4_Bouncy_Trail() { 
+    private void Example_Shoot_4_Bouncy_Trail(float force) { 
         GameObject bulletGO = (GameObject) Instantiate(bulletBouncyPref.gameObject, shootGO.transform.position, box.transform.rotation);
         Bullet bulletComponent = bulletGO.GetComponent<Bullet>();
         bulletComponent.ShowTrail();
-        bulletComponent.Shoot(bulletForce);
+        bulletComponent.Shoot(force);
         
         bulletGO.transform.parent = cleanBucket.transform;
     }
@@ -1109,6 +1201,11 @@ public class Movement : MonoBehaviour
         return BounceOut(k*2f - 1f)*0.5f + 0.5f;
     }
 
+    private void ShowMouse(bool isDragging) { 
+        mouseGroup.active = true;
+
+        SetKeyColor(mouse, isDragging);
+    }
     private void ShowKeys() { 
         keys.active = true;
 
@@ -1120,6 +1217,16 @@ public class Movement : MonoBehaviour
         SetKeyColor(leftKey, showLeft);
         bool showRight = (movementDirection.x > 0);
         SetKeyColor(rightKey, showRight);
+    }
+    private void ShowSpaceKey() { 
+        
+        SpaceGroup.active = true;
+
+        SetKeyColor(SpaceKey, isHoldingSpace);
+    }
+    private void ShowForceSpeed() { 
+        speedGroup.active = true;
+        speedText.text = speedLerp.ToString("f2");
     }
     private void SetKeyColor(GameObject keyImage, bool select) { 
         if (select) {
