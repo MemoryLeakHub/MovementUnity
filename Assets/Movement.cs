@@ -13,6 +13,8 @@ public class Movement : MonoBehaviour
     public GameObject redBox;
     public GameObject blueBox;
     public GameObject boxFacingLine;
+    public GameObject physicsBoxFacingLine;
+
     public GameObject redBoxFacingLine;
     public GameObject emptyCircle;
     public Rigidbody2D bulletPref;
@@ -39,6 +41,7 @@ public class Movement : MonoBehaviour
     public TMP_Text timerText;
     public GameObject mouseGroup;
     public GameObject mouse;
+    public TMP_Text mouseLabel;
     public GameObject SpaceGroup;
     public GameObject SpaceKey;
     public GameObject speedGroup;
@@ -51,6 +54,8 @@ public class Movement : MonoBehaviour
     private float visualDistance = 0.0f;
     private float timeElapsed = 0.0f;
     private float speedTimeElapsed = 0.0f;
+    private float hookTimeElapsed = 0.0f;
+    private float mouseTimeElapsed = 0.0f;
     private bool isHoldingSpace = false;
     private bool start = false;
     private int example = 0;
@@ -60,6 +65,7 @@ public class Movement : MonoBehaviour
     private List<GameObject> planets = new List<GameObject>();
     private Vector3 cameraStartPosition;
     public GameObject shootGO;
+    public GameObject physicsShootGO;
     private float gravity;
     private float physicsTime;
 
@@ -77,9 +83,18 @@ public class Movement : MonoBehaviour
     private Vector3 startPoint;
     private Vector3 endPoint;
     private bool dragging = false;
+    private bool isHoldingMouse = false;
     private Scene sceneSimulation;
     private PhysicsScene2D physicsScene;
     public List<Transform> physicsSceneObjects = new();
+    private bool shoot = false;
+    public GameObject physicsHook;
+    public Rigidbody2D physicsHookRb;
+    public float hookDistance = 20f;
+    private GameObject hookObject;
+    private RaycastHit2D raycastHit2D;
+    private bool pullObject = false;
+    private bool finishedPull = true;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -111,6 +126,8 @@ public class Movement : MonoBehaviour
         timeElapsed = 0;
         visualTime = 0;
         timerGroup.active = false;
+        pullObject = false;
+        finishedPull = true;
         redBox.active = false;
         timerText.gameObject.active = false;
         box.transform.position = new Vector2(-5.72f, 1.12f);
@@ -128,7 +145,13 @@ public class Movement : MonoBehaviour
         isHoldingSpace = false;
         SpaceGroup.active = false;
         speedGroup.active = false;
+        physicsHook.active = false;
+        physicsHook.transform.localPosition = new Vector2(0,0);
+        hookTimeElapsed = 0;
+        mouseTimeElapsed = 0;
+        isHoldingMouse = false;
         speedLerp = 0f;
+        shoot = false;
         try {
             SceneManager.UnloadScene("PhysicsTrajectorySimulation");
         } catch(Exception ex) {
@@ -405,11 +428,28 @@ public class Movement : MonoBehaviour
         } else if (example == 48) {
             ShowBox();
             ShowBoxFacingLine();
+            mouseLabel.text = "DRAG";
             boxLineRenderer.material = dottedMaterial;
             ShowPhysicsGround();
             physicsSceneObjects.Add(physicsGround.transform);
             CreatePhysicsScene_Trajectory();
+        } else if (example == 49) {
+            spaceLabel.text = "FIRE";
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowPhysicsBoxFacingLine();
+            ShowPhysicsHook();
+            ShowRedBoxPhysics(2);
+        } else if (example == 50) {
+            spaceLabel.text = "FIRE";
+            mouseLabel.text = "PULL";
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowPhysicsBoxFacingLine();
+            ShowPhysicsHook();
+            ShowRedBoxPhysics(2);
         }
+        
     }
     // Example 1
     // transform.position - set the position anywhere in the map
@@ -443,14 +483,26 @@ public class Movement : MonoBehaviour
         // Vertical: Bottom = -1, Top = 1
         movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         timeElapsed += Time.deltaTime;
-        if (Input.GetMouseButtonDown(0)) {
-            mouseStartDragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mouseCurrentDragPosition = mouseStartDragPosition;
-            dragging = true;
-        } else if (Input.GetMouseButtonUp(0)) { 
-            dragging = false;
+        if (example == 48) {
+            if (Input.GetMouseButtonDown(0)) {
+                mouseStartDragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mouseCurrentDragPosition = mouseStartDragPosition;
+                dragging = true;
+            } else if (Input.GetMouseButtonUp(0)) { 
+                dragging = false;
+            }
+        } else if (example == 50) { 
+            if (Input.GetMouseButtonDown(0)) {
+                isHoldingMouse = true;
+                mouseTimeElapsed = 0;
+                finishedPull = false;
+            } else if (Input.GetMouseButtonUp(0)) { 
+                isHoldingMouse = false;
+            }
         }
-       
+        if (isHoldingMouse) {
+            mouseTimeElapsed += Time.deltaTime;
+        }
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
             Debug.Log("GetKeyDown");
             // if (example == 23) {
@@ -479,11 +531,20 @@ public class Movement : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Space)) {
             speedTimeElapsed = 0;
+            hookTimeElapsed = 0;
             isHoldingSpace = true;
+            pullObject = false;
+            
+            if (example == 49) {
+                Example_Shoot_Hook();
+            } else if (example == 50) {
+                Example_Shoot_Hook_2();
+            }
         }
         if (Input.GetKeyUp(KeyCode.Space)) {
             isHoldingSpace = false;
         }
+        hookTimeElapsed += Time.deltaTime;
         if (isHoldingSpace) {
             speedTimeElapsed += Time.deltaTime;
         }
@@ -860,6 +921,17 @@ public class Movement : MonoBehaviour
             ShowKeys();
             ShowMouse(dragging);
             ShowForceSpeed();
+        } else if (example == 49) {
+            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
+            var hookSpeed = 20;
+            var totalTime = shootDistance / hookSpeed;
+            var time = hookTimeElapsed / totalTime;
+            if (shoot && raycastHit2D.collider != null) {
+                physicsHook.transform.position = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
+            }
+            MovePhysicsBox(10);
+            ShowKeys();
+            ShowSpaceKey();
         } 
     }
     void FixedUpdate() { 
@@ -928,7 +1000,37 @@ public class Movement : MonoBehaviour
 
     //         var speed = 10f;
     //         boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-    //     } 
+    //     } else 
+        if (example == 50) {
+            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
+            var hookSpeed = 20;
+            var totalTime = shootDistance / hookSpeed;
+            var time = hookTimeElapsed / totalTime;
+            if (shoot && raycastHit2D.collider != null) {
+                Debug.Log("physicsShootGO.transform.position: " + physicsShootGO.transform.position);
+                Debug.Log("raycastHit2D.point : " + raycastHit2D.point);
+                var push = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
+                physicsHookRb.MovePosition(push);
+            }
+            if (Vector2.Distance((Vector2) physicsHookRb.transform.position, raycastHit2D.point) < 0.02f && isHoldingMouse) {
+                pullObject = true;
+            }
+            if (Vector2.Distance((Vector2) physicsHookRb.transform.position, physicsShootGO.transform.position) < 0.02f) {
+                finishedPull = true;
+            }
+            if (pullObject && !finishedPull) {
+                var pullTime = mouseTimeElapsed / totalTime;
+                var pull = Vector3.Lerp(physicsHookRb.transform.position, physicsShootGO.transform.position, pullTime);
+                physicsHookRb.MovePosition(pull);
+                shoot = false;
+            }
+            bool isPulling = (mouseTimeElapsed != 0 && mouseTimeElapsed != 1);
+            ShowMouse(isPulling); 
+            MovePhysicsBox(10);
+            ShowKeys();
+            ShowSpaceKey();
+        }
+        
     }
     private void Awake()
     {
@@ -1086,9 +1188,34 @@ public class Movement : MonoBehaviour
     //         boxLineRenderer.SetPosition(i, shootStartPosition);
     //     }
     // }
+    
     private void Example_Jump() {
         var amount = 6f;
         physicsBoxRb.AddForce(Vector2.up * amount, ForceMode2D.Impulse);
+    }
+    private void Example_Shoot_Hook() { 
+        Debug.Log(physicsShootGO.transform.position);
+        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance);
+        if (hit.collider != null) {
+            shoot = true;
+            raycastHit2D = hit;
+        } else {
+            shoot = false;
+            physicsHook.transform.localPosition = new Vector2(0,0);
+        }
+    }
+    private void Example_Shoot_Hook_2() { 
+        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance);
+        Debug.Log(hit.collider);
+        if (hit.collider != null) {
+            shoot = true;
+            raycastHit2D = hit;
+            physicsHook.GetComponent<FixedJoint2D>().connectedBody = hit.collider.gameObject.GetComponent<Rigidbody2D>();
+        } else {
+            shoot = false;
+            physicsHook.transform.localPosition = new Vector2(0,0);
+            physicsHook.GetComponent<FixedJoint2D>().connectedBody = null;
+        }
     }
     private void Example_Shoot() {
         // Part 1
@@ -1162,6 +1289,9 @@ public class Movement : MonoBehaviour
         timerText.text = visualTime.ToString("f2");
     }
 
+    private void MovePhysicsBox(float speed){ 
+       boxPhysicsRb.velocity = movementDirection * speed;
+    }
     private void MoveRedBoxVertical(float start, float end) { 
         var speed = 2f;
         float time = Mathf.PingPong(timeElapsed*speed, 1);
@@ -1215,6 +1345,12 @@ public class Movement : MonoBehaviour
         box.transform.rotation = Quaternion.Euler(Vector3.forward * angle);
     }
 
+    private void ShowPhysicsHook() { 
+        physicsHook.active = true;
+    }
+    private void ShowPhysicsBoxFacingLine() { 
+        physicsBoxFacingLine.active = true;
+    }
     private void ShowBoxFacingLine() { 
         boxFacingLine.active = true;
     }
