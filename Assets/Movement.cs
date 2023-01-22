@@ -97,7 +97,7 @@ public class Movement : MonoBehaviour
     private GameObject hookObject;
     private RaycastHit2D raycastHit2D;
     private bool pullObject = false;
-    private bool finishedPull = true;
+    private bool finishedPull = false;
     private Vector3 redBoxStartPosition;
     public LayerMask grabMask;
     public FixedJoint2D physicsHookFixedJoint;
@@ -133,7 +133,7 @@ public class Movement : MonoBehaviour
         visualTime = 0;
         timerGroup.active = false;
         pullObject = false;
-        finishedPull = true;
+        finishedPull = false;
         redBox.active = false;
         timerText.gameObject.active = false;
         box.transform.position = new Vector2(-5.72f, 1.12f);
@@ -458,7 +458,7 @@ public class Movement : MonoBehaviour
         } else if (example == 51) { 
             physicsRedBoxRb.bodyType = RigidbodyType2D.Dynamic;
             spaceLabel.text = "FIRE";
-            mouseLabel.text = "TOGGLE";
+            mouseLabel.text = "DETACH";
             ShowPhysicsBox();
             ShowPhysicsGround();
             ShowPhysicsBoxFacingLine();
@@ -513,6 +513,11 @@ public class Movement : MonoBehaviour
                 toggleOnClick = !toggleOnClick;
                 mouseTimeElapsed = 0;
                 finishedPull = false;
+                if (toggleOnClick) {
+                    mouseLabel.text = "ATTACH";
+                } else {
+                    mouseLabel.text = "DETACH";
+                }
             }
         }
         if (toggleOnClick) {
@@ -1026,6 +1031,8 @@ public class Movement : MonoBehaviour
                 physicsHookRb.MovePosition(push);
             }
 
+            // Check if the redbox is attached to the magnet
+            // Check if the magnet is attached to the start position
             if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
                 finishedPull = true;
             }
@@ -1050,13 +1057,17 @@ public class Movement : MonoBehaviour
                 physicsHookRb.MovePosition(push);
             }
             
-            
-
+            // Check if the redbox is attached to the magnet
+            // Check if the magnet is attached to the start position
             if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
                 finishedPull = true;
             }
 
-            if (raycastHit2D.collider != null && 
+            // !ToggleOnClik - Check if it's detachable
+            // !finishedPull - Make sure it's not pulled already
+            // Check if the magnet is touching the redbox
+            Debug.Log("finishedPull : " + finishedPull + " toggleOnClick : " + toggleOnClick);
+            if (raycastHit2D.collider != null &&  
                 !physicsHookCollider.IsTouching(shootGOCollider) && 
                 physicsHookCollider.IsTouching(raycastHit2D.collider) &&
                 !finishedPull &&
@@ -1251,7 +1262,6 @@ public class Movement : MonoBehaviour
     }
     private void Example_Shoot_Hook_2() { 
         RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance, grabMask);
-        Debug.Log(hit.collider);
         if (hit.collider != null) {
             shoot = true;
             raycastHit2D = hit;

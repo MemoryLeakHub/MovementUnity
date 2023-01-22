@@ -5123,6 +5123,7 @@ MonoBehaviour:
   grabMask:
     serializedVersion: 2
     m_Bits: 64
+  physicsHookFixedJoint: {fileID: 1427693602}
 --- !u!1 &520360067
 GameObject:
   m_ObjectHideFlags: 0
@@ -18471,6 +18472,7 @@ GameObject:
   - component: {fileID: 1911015980}
   - component: {fileID: 1911015979}
   - component: {fileID: 1911015981}
+  - component: {fileID: 1911015982}
   m_Layer: 0
   m_Name: ShootPosition
   m_TagString: Untagged
@@ -18665,6 +18667,27 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.105
+--- !u!50 &1911015982
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911015977}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1921554091
 GameObject:
   m_ObjectHideFlags: 0
