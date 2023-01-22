@@ -151,6 +151,7 @@ public class Movement : MonoBehaviour
         isHoldingSpace = false;
         SpaceGroup.active = false;
         speedGroup.active = false;
+        mouseGroup.active = false;
         physicsHook.active = false;
         physicsRedBoxRb.bodyType = RigidbodyType2D.Kinematic;
         physicsHook.transform.localPosition = new Vector2(0,0);
@@ -941,17 +942,6 @@ public class Movement : MonoBehaviour
             ShowKeys();
             ShowMouse(dragging);
             ShowForceSpeed();
-        } else if (example == 49) {
-            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
-            var hookSpeed = 20;
-            var totalTime = shootDistance / hookSpeed;
-            var time = hookTimeElapsed / totalTime;
-            if (shoot && raycastHit2D.collider != null) {
-                physicsHook.transform.position = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
-            }
-            MovePhysicsBox(10);
-            ShowKeys();
-            ShowSpaceKey();
         } 
     }
     void FixedUpdate() { 
@@ -1021,7 +1011,19 @@ public class Movement : MonoBehaviour
     //         var speed = 10f;
     //         boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
     //     } else 
-        if (example == 50) {
+         if (example == 49) {
+            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
+            var hookSpeed = 20;
+            var totalTime = shootDistance / hookSpeed;
+            var time = hookTimeElapsed / totalTime;
+            if (shoot && raycastHit2D.collider != null) {
+                var push =  Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
+                physicsHookRb.MovePosition(push);
+            }
+            MovePhysicsBox(10);
+            ShowKeys();
+            ShowSpaceKey();
+        } else if (example == 50) {
             var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
             var hookSpeed = 20;
             var totalTime = shootDistance / hookSpeed;
@@ -1129,6 +1131,9 @@ public class Movement : MonoBehaviour
         physicsScene = sceneSimulation.GetPhysicsScene2D();
         foreach(Transform obj in physicsSceneObjects) {
             var physicsObject = Instantiate(obj.gameObject, obj.position, obj.rotation);
+            if (physicsObject.tag == "StopBullet") {
+                stopBulletColliders.Add(physicsObject.GetComponent<Collider2D>());
+            }
             SceneManager.MoveGameObjectToScene(physicsObject, sceneSimulation);
         }
     }
@@ -1187,6 +1192,8 @@ public class Movement : MonoBehaviour
     }
     private bool isBulletToichingStopCollider(Collider2D bulletCollider2D) { 
          foreach (Collider2D collider in stopBulletColliders) {
+            var distance = (bulletCollider2D.gameObject.transform.position - collider.transform.position).magnitude;
+            Debug.Log(collider.gameObject.name);
             if (collider.IsTouching(bulletCollider2D)) {
                 return true;
             }
@@ -1205,7 +1212,7 @@ public class Movement : MonoBehaviour
         for (int i = 0; i < points.Length; i++)
         {
             physicsScene.Simulate(Time.fixedDeltaTime);
-            Debug.Log(bullet.position);
+            Debug.Log(isBulletToichingStopCollider(bulletCollider2D));
             if (isBulletToichingStopCollider(bulletCollider2D)) {
                 break;
             }
@@ -1251,7 +1258,7 @@ public class Movement : MonoBehaviour
     }
     private void Example_Shoot_Hook() { 
         Debug.Log(physicsShootGO.transform.position);
-        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance);
+        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance, grabMask);
         if (hit.collider != null) {
             shoot = true;
             raycastHit2D = hit;
@@ -1308,13 +1315,14 @@ public class Movement : MonoBehaviour
     private void StopBulletCollision(Vector2 position) { 
         GameObject bulletCollision = (GameObject) Instantiate(stopBulletCollisionPref.gameObject, position, Quaternion.identity);
         bulletCollision.transform.parent = cleanBucket.transform;
-        stopBulletColliders.Add(bulletCollision.GetComponent<Collider2D>());
-        allColliders.Add(bulletCollision.GetComponent<Collider2D>());
+        var collider = bulletCollision.GetComponent<Collider2D>();
+        allColliders.Add(collider);
     }
     private void NormalBulletCollision(Vector2 position) { 
         GameObject bulletCollision = (GameObject) Instantiate(normalBulletCollisionPref.gameObject, position, Quaternion.identity);
         bulletCollision.transform.parent = cleanBucket.transform;
-        allColliders.Add(bulletCollision.GetComponent<Collider2D>());
+        var collider = bulletCollision.GetComponent<Collider2D>();
+        allColliders.Add(collider);
     }
     private void BoxScale(float size) { 
         box.transform.localScale = new Vector3(size,size,size);

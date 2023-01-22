@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4020751160940228726}
   - component: {fileID: 8490216247158423929}
   - component: {fileID: 4981002966121503836}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: StopBulletCollisionPref
   m_TagString: StopBullet
   m_Icon: {fileID: 0}
