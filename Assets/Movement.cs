@@ -31,6 +31,7 @@ public class Movement : MonoBehaviour
     public GameObject physicsBox;
     public Rigidbody2D physicsBoxRb;
     public GameObject physicsRedBox;
+    public Rigidbody2D physicsRedBoxRb;
     public GameObject physicsGround;
     public GameObject physicsRedPlatform;
     public Rigidbody2D physicsRedPlatformRb;
@@ -83,18 +84,23 @@ public class Movement : MonoBehaviour
     private Vector3 startPoint;
     private Vector3 endPoint;
     private bool dragging = false;
-    private bool isHoldingMouse = false;
+    private bool toggleOnClick = false;
     private Scene sceneSimulation;
     private PhysicsScene2D physicsScene;
     public List<Transform> physicsSceneObjects = new();
     private bool shoot = false;
     public GameObject physicsHook;
     public Rigidbody2D physicsHookRb;
+    public Collider2D physicsHookCollider;
+    public Collider2D shootGOCollider;
     public float hookDistance = 20f;
     private GameObject hookObject;
     private RaycastHit2D raycastHit2D;
     private bool pullObject = false;
     private bool finishedPull = true;
+    private Vector3 redBoxStartPosition;
+    public LayerMask grabMask;
+    public FixedJoint2D physicsHookFixedJoint;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -146,10 +152,11 @@ public class Movement : MonoBehaviour
         SpaceGroup.active = false;
         speedGroup.active = false;
         physicsHook.active = false;
+        physicsRedBoxRb.bodyType = RigidbodyType2D.Kinematic;
         physicsHook.transform.localPosition = new Vector2(0,0);
         hookTimeElapsed = 0;
         mouseTimeElapsed = 0;
-        isHoldingMouse = false;
+        toggleOnClick = false;
         speedLerp = 0f;
         shoot = false;
         try {
@@ -442,12 +449,22 @@ public class Movement : MonoBehaviour
             ShowRedBoxPhysics(2);
         } else if (example == 50) {
             spaceLabel.text = "FIRE";
-            mouseLabel.text = "PULL";
+            mouseLabel.text = "TOGGLE";
             ShowPhysicsBox();
             ShowPhysicsGround();
             ShowPhysicsBoxFacingLine();
             ShowPhysicsHook();
             ShowRedBoxPhysics(2);
+        } else if (example == 51) { 
+            physicsRedBoxRb.bodyType = RigidbodyType2D.Dynamic;
+            spaceLabel.text = "FIRE";
+            mouseLabel.text = "TOGGLE";
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowPhysicsBoxFacingLine();
+            ShowPhysicsHook();
+            ShowRedBoxPhysics(2);
+            redBoxStartPosition = physicsRedBox.transform.position;
         }
         
     }
@@ -491,16 +508,14 @@ public class Movement : MonoBehaviour
             } else if (Input.GetMouseButtonUp(0)) { 
                 dragging = false;
             }
-        } else if (example == 50) { 
+        } else if (example == 50 || example == 51) { 
             if (Input.GetMouseButtonDown(0)) {
-                isHoldingMouse = true;
+                toggleOnClick = !toggleOnClick;
                 mouseTimeElapsed = 0;
                 finishedPull = false;
-            } else if (Input.GetMouseButtonUp(0)) { 
-                isHoldingMouse = false;
             }
         }
-        if (isHoldingMouse) {
+        if (toggleOnClick) {
             mouseTimeElapsed += Time.deltaTime;
         }
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -537,7 +552,7 @@ public class Movement : MonoBehaviour
             
             if (example == 49) {
                 Example_Shoot_Hook();
-            } else if (example == 50) {
+            } else if (example == 50 || example == 51) {
                 Example_Shoot_Hook_2();
             }
         }
@@ -1007,25 +1022,55 @@ public class Movement : MonoBehaviour
             var totalTime = shootDistance / hookSpeed;
             var time = hookTimeElapsed / totalTime;
             if (shoot && raycastHit2D.collider != null) {
-                Debug.Log("physicsShootGO.transform.position: " + physicsShootGO.transform.position);
-                Debug.Log("raycastHit2D.point : " + raycastHit2D.point);
                 var push = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
                 physicsHookRb.MovePosition(push);
             }
-            if (Vector2.Distance((Vector2) physicsHookRb.transform.position, raycastHit2D.point) < 0.02f && isHoldingMouse) {
-                pullObject = true;
-            }
-            if (Vector2.Distance((Vector2) physicsHookRb.transform.position, physicsShootGO.transform.position) < 0.02f) {
+
+            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
                 finishedPull = true;
             }
-            if (pullObject && !finishedPull) {
+
+            if (toggleOnClick && !finishedPull) {
                 var pullTime = mouseTimeElapsed / totalTime;
                 var pull = Vector3.Lerp(physicsHookRb.transform.position, physicsShootGO.transform.position, pullTime);
                 physicsHookRb.MovePosition(pull);
                 shoot = false;
             }
-            bool isPulling = (mouseTimeElapsed != 0 && mouseTimeElapsed != 1);
-            ShowMouse(isPulling); 
+            ShowMouse(toggleOnClick); 
+            MovePhysicsBox(10);
+            ShowKeys();
+            ShowSpaceKey();
+        } else if (example == 51) {
+            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
+            var hookSpeed = 20;
+            var totalTime = shootDistance / hookSpeed;
+            var time = hookTimeElapsed / totalTime;
+            if (shoot && raycastHit2D.collider != null) {
+                var push = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
+                physicsHookRb.MovePosition(push);
+            }
+            
+            
+
+            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
+                finishedPull = true;
+            }
+
+            if (raycastHit2D.collider != null && 
+                !physicsHookCollider.IsTouching(shootGOCollider) && 
+                physicsHookCollider.IsTouching(raycastHit2D.collider) &&
+                !finishedPull &&
+                !toggleOnClick) {
+                physicsHookFixedJoint.connectedBody = raycastHit2D.collider.gameObject.GetComponent<Rigidbody2D>();
+            }
+
+            if (toggleOnClick && !finishedPull) {
+                var pullTime = mouseTimeElapsed / totalTime;
+                var pull = Vector3.Lerp(physicsHookRb.transform.position, physicsShootGO.transform.position, pullTime);
+                physicsHookRb.MovePosition(pull);
+                shoot = false;
+            }
+            ShowMouse(toggleOnClick); 
             MovePhysicsBox(10);
             ShowKeys();
             ShowSpaceKey();
@@ -1205,16 +1250,15 @@ public class Movement : MonoBehaviour
         }
     }
     private void Example_Shoot_Hook_2() { 
-        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance);
+        RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance, grabMask);
         Debug.Log(hit.collider);
         if (hit.collider != null) {
             shoot = true;
             raycastHit2D = hit;
-            physicsHook.GetComponent<FixedJoint2D>().connectedBody = hit.collider.gameObject.GetComponent<Rigidbody2D>();
+            physicsHookFixedJoint.connectedBody = null;
         } else {
             shoot = false;
             physicsHook.transform.localPosition = new Vector2(0,0);
-            physicsHook.GetComponent<FixedJoint2D>().connectedBody = null;
         }
     }
     private void Example_Shoot() {
