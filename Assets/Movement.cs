@@ -501,10 +501,27 @@ public class Movement : MonoBehaviour
             StopBulletCollision(new Vector2(4f,1));
             NormalBulletCollision(new Vector2(5f,1));
             NormalBulletCollision(new Vector2(6f,1));
-        }else if (example == 54) { 
+        } else if (example == 54) { 
             BoxScale(0.35f);
             ShowBox();
             ShowBoxFacingLine();
+            GameObject part = CreateFollowPart(box.transform);
+            GameObject part2 = CreateFollowPart(part.transform);
+        } else if (example == 55) { 
+            BoxScale(0.35f);
+            ShowBox();
+            ShowBoxFacingLine();
+            NormalBulletCollision(new Vector2(-4,1));
+            NormalBulletCollision(new Vector2(-3,1));
+            NormalBulletCollision(new Vector2(-2,1));
+            StopBulletCollision(new Vector2(-1,1));
+            StopBulletCollision(new Vector2(0,1));
+            NormalBulletCollision(new Vector2(1f,1));
+            NormalBulletCollision(new Vector2(2f,1));
+            NormalBulletCollision(new Vector2(3f,1));
+            StopBulletCollision(new Vector2(4f,1));
+            NormalBulletCollision(new Vector2(5f,1));
+            NormalBulletCollision(new Vector2(6f,1));
             GameObject part = CreateFollowPart(box.transform);
             GameObject part2 = CreateFollowPart(part.transform);
         }
@@ -1190,8 +1207,31 @@ public class Movement : MonoBehaviour
            
             
             ShowKeys();
+        } else if (example == 55) {
+            var rotationSpeed = 150f;
+            var moveSpeed = 1.5f;
+            box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
+           
+            var radius = 1.5f;
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll((Vector2)box.transform.position, radius, collectMask);
+            foreach (var hitCollider in hitColliders)
+            {
+                var collect = hitCollider.gameObject.GetComponent<Collect>();
+                collect.callback = OnEat;
+                if (!collect.isCollecting) {
+                    collect.Eat(box.transform);
+                }
+            }
+            
+
+            ShowKeys();
         }
         
+    }
+    private void OnEat() { 
+        Transform previousPart = bodyParts.transform.GetChild(bodyParts.transform.childCount - 1);
+        CreateFollowPart(previousPart);
     }
     private GameObject CreateFollowPart(Transform followTarget) { 
         var spaceBetween =  1f;
@@ -1211,8 +1251,7 @@ public class Movement : MonoBehaviour
     private Vector3 FollowPosition(Transform target, float spaceBetween)
     {
         var position = target.position;
-        var spacing = target.GetComponent<SpriteRenderer>().bounds.size.x + spaceBetween;
-        return position - target.right * spacing;
+        return position - target.right * spaceBetween;
     }
     private void OnDrawGizmos() {
         if (example == 53) {
