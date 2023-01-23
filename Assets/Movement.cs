@@ -76,6 +76,7 @@ public class Movement : MonoBehaviour
     public Material spriteDefault;
     public Material dottedMaterial;
     public GameObject cleanBucket;
+    public GameObject bodyParts;
     public GameObject normalBulletCollisionPref;
     public GameObject stopBulletCollisionPref;
     private List<Collider2D> stopBulletColliders = new();
@@ -101,6 +102,9 @@ public class Movement : MonoBehaviour
     private Vector3 redBoxStartPosition;
     public LayerMask grabMask;
     public FixedJoint2D physicsHookFixedJoint;
+    public LayerMask collectMask;
+    public GameObject followPartPref;
+    public LineRenderer ropeLR;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -153,6 +157,7 @@ public class Movement : MonoBehaviour
         speedGroup.active = false;
         mouseGroup.active = false;
         physicsHook.active = false;
+        ropeLR.enabled = false;
         physicsRedBoxRb.bodyType = RigidbodyType2D.Kinematic;
         physicsHook.transform.localPosition = new Vector2(0,0);
         hookTimeElapsed = 0;
@@ -164,6 +169,10 @@ public class Movement : MonoBehaviour
             SceneManager.UnloadScene("PhysicsTrajectorySimulation");
         } catch(Exception ex) {
 
+        }
+        
+        foreach (Transform child in bodyParts.transform) {
+            GameObject.Destroy(child.gameObject);
         }
         foreach (Transform child in cleanBucket.transform) {
             GameObject.Destroy(child.gameObject);
@@ -466,6 +475,38 @@ public class Movement : MonoBehaviour
             ShowPhysicsHook();
             ShowRedBoxPhysics(2);
             redBoxStartPosition = physicsRedBox.transform.position;
+        } else if (example == 52) { 
+            physicsRedBoxRb.bodyType = RigidbodyType2D.Dynamic;
+            spaceLabel.text = "FIRE";
+            mouseLabel.text = "DETACH";
+            ropeLR.enabled = true;
+            ShowPhysicsBox();
+            ShowPhysicsGround();
+            ShowPhysicsBoxFacingLine();
+            ShowPhysicsHook();
+            ShowRedBoxPhysics(2);
+            redBoxStartPosition = physicsRedBox.transform.position;
+        } else if (example == 53) { 
+            BoxScale(0.35f);
+            ShowBox();
+            ShowBoxFacingLine();
+            NormalBulletCollision(new Vector2(-4,1));
+            NormalBulletCollision(new Vector2(-3,1));
+            NormalBulletCollision(new Vector2(-2,1));
+            StopBulletCollision(new Vector2(-1,1));
+            StopBulletCollision(new Vector2(0,1));
+            NormalBulletCollision(new Vector2(1f,1));
+            NormalBulletCollision(new Vector2(2f,1));
+            NormalBulletCollision(new Vector2(3f,1));
+            StopBulletCollision(new Vector2(4f,1));
+            NormalBulletCollision(new Vector2(5f,1));
+            NormalBulletCollision(new Vector2(6f,1));
+        }else if (example == 54) { 
+            BoxScale(0.35f);
+            ShowBox();
+            ShowBoxFacingLine();
+            GameObject part = CreateFollowPart(box.transform);
+            GameObject part2 = CreateFollowPart(part.transform);
         }
         
     }
@@ -509,7 +550,7 @@ public class Movement : MonoBehaviour
             } else if (Input.GetMouseButtonUp(0)) { 
                 dragging = false;
             }
-        } else if (example == 50 || example == 51) { 
+        } else if (example == 50 || example == 51 || example == 52) { 
             if (Input.GetMouseButtonDown(0)) {
                 toggleOnClick = !toggleOnClick;
                 mouseTimeElapsed = 0;
@@ -558,7 +599,7 @@ public class Movement : MonoBehaviour
             
             if (example == 49) {
                 Example_Shoot_Hook();
-            } else if (example == 50 || example == 51) {
+            } else if (example == 50 || example == 51 || example == 52) {
                 Example_Shoot_Hook_2();
             }
         }
@@ -1087,8 +1128,97 @@ public class Movement : MonoBehaviour
             MovePhysicsBox(10);
             ShowKeys();
             ShowSpaceKey();
+        } else if (example == 52) {
+            var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
+            var hookSpeed = 20;
+            var totalTime = shootDistance / hookSpeed;
+            var time = hookTimeElapsed / totalTime;
+            if (shoot && raycastHit2D.collider != null) {
+                var push = Vector3.Lerp(physicsShootGO.transform.position, raycastHit2D.point, time);
+                physicsHookRb.MovePosition(push);
+            }
+            
+            // Check if the redbox is attached to the magnet
+            // Check if the magnet is attached to the start position
+            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
+                finishedPull = true;
+            }
+
+            // !ToggleOnClik - Check if it's detachable
+            // !finishedPull - Make sure it's not pulled already
+            // Check if the magnet is touching the redbox
+            Debug.Log("finishedPull : " + finishedPull + " toggleOnClick : " + toggleOnClick);
+            if (raycastHit2D.collider != null &&  
+                !physicsHookCollider.IsTouching(shootGOCollider) && 
+                physicsHookCollider.IsTouching(raycastHit2D.collider) &&
+                !finishedPull &&
+                !toggleOnClick) {
+                physicsHookFixedJoint.connectedBody = raycastHit2D.collider.gameObject.GetComponent<Rigidbody2D>();
+            }
+
+            if (toggleOnClick && !finishedPull) {
+                var pullTime = mouseTimeElapsed / totalTime;
+                var pull = Vector3.Lerp(physicsHookRb.transform.position, physicsShootGO.transform.position, pullTime);
+                physicsHookRb.MovePosition(pull);
+                shoot = false;
+            }
+            ShowMouse(toggleOnClick); 
+            MovePhysicsBox(10);
+            ShowKeys();
+            ShowSpaceKey();
+        } else if (example == 53) {
+            var rotationSpeed = 150f;
+            var moveSpeed = 1.5f;
+            box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
+            var radius = 1.5f;
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll((Vector2)box.transform.position, radius, collectMask);
+            foreach (var hitCollider in hitColliders)
+            {
+                var collect = hitCollider.gameObject.GetComponent<Collect>();
+                if (!collect.isCollecting) {
+                    collect.StartCollecting(box.transform);
+                }
+            }
+            
+            ShowKeys();
+        } else if (example == 54) {
+            var rotationSpeed = 150f;
+            var moveSpeed = 1.5f;
+            box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
+           
+            
+            ShowKeys();
         }
         
+    }
+    private GameObject CreateFollowPart(Transform followTarget) { 
+        var spaceBetween =  1f;
+        var bodyPart = Instantiate(
+            followPartPref,
+            FollowPosition(followTarget, spaceBetween),
+            Quaternion.identity
+        );
+        bodyPart.transform.parent = bodyParts.transform;
+        BodyPart bodyPartComponent = bodyPart.GetComponent<BodyPart>();
+        bodyPartComponent.FollowTarget = followTarget;
+        bodyPartComponent.Speed = 1.5f;
+        bodyPartComponent.SpaceBetween = spaceBetween;
+
+        return bodyPart;
+    }
+    private Vector3 FollowPosition(Transform target, float spaceBetween)
+    {
+        var position = target.position;
+        var spacing = target.GetComponent<SpriteRenderer>().bounds.size.x + spaceBetween;
+        return position - target.right * spacing;
+    }
+    private void OnDrawGizmos() {
+        if (example == 53) {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere((Vector2)box.transform.position, 1.5f);
+        }
     }
     private void Awake()
     {
@@ -1350,7 +1480,6 @@ public class Movement : MonoBehaviour
         visualTime = timeElapsed;
         timerText.text = visualTime.ToString("f2");
     }
-
     private void MovePhysicsBox(float speed){ 
        boxPhysicsRb.velocity = movementDirection * speed;
     }
