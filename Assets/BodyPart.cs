@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,8 +6,20 @@ using UnityEngine;
 public class BodyPart : MonoBehaviour
 {
     public Transform FollowTarget;
-    public float  SpaceBetween;
-    public float  Speed;
+    public float SpaceBetween;
+    private float defaultSpeed = 1.5f;
+    private float speed = 1.5f;
+   
+    public void ChangeSpeed(bool isHoldingSpace) { 
+        if (isHoldingSpace) {
+            speed = defaultSpeed * 2;
+        } else {
+            speed = defaultSpeed;
+        }
+    }
+    public void Start() { 
+
+    }
     private void Update()
     {
         Vector3 vectorToTarget = FollowTarget.position - transform.position;
@@ -15,7 +28,7 @@ public class BodyPart : MonoBehaviour
         var distanceToHead = (transform.position - FollowTarget.position).magnitude;
         if (distanceToHead > SpaceBetween)
         {
-            transform.Translate(Vector3.right * Speed * Time.deltaTime);
+            transform.Translate(Vector3.right * speed * Time.deltaTime);
         }
     }
 }

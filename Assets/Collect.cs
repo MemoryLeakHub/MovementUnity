@@ -32,7 +32,7 @@ public class Collect : MonoBehaviour
             }
         }
         if (isEaten) {
-            var speed = 2; // seconds
+            var speed = 4; // seconds
             var step = speed * Time.deltaTime;
             var target = character.transform.position;
             gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, target, step);

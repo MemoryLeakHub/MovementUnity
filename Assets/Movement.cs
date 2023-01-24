@@ -114,6 +114,9 @@ public class Movement : MonoBehaviour
     public BoxCollider2D boxCollider2D;
     public BoxCollider2D topEdgeCollider2D;
     public LayerMask wallsMask;
+    private float spawnElapsedTime;
+    private delegate void OnSpeedChangeDelegate(bool isHoldingSpace);
+    private static OnSpeedChangeDelegate onSpeedChangeDelegate;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -538,27 +541,31 @@ public class Movement : MonoBehaviour
             NormalBulletCollision(new Vector2(6f,1));
             GameObject part = CreateFollowPart(box.transform);
             GameObject part2 = CreateFollowPart(part.transform);
-        } else if (example == 56 || example == 57) {
+        } else if (example == 56 || example == 57 || example == 58) {
             cinemachine.active = true;
-            if (example == 57) { 
+            if (example == 57 || example == 58) { 
                 worldCollider.enabled = false;
                 confiner2D.m_BoundingShape2D = worldCollider;
             }
-            
+            if (example == 58) {
+                ShowSpaceKey();
+            }
             BoxScale(0.35f);
             ShowBox();
             ShowBoxFacingLine();
-            NormalBulletCollision(new Vector2(-4,1));
-            NormalBulletCollision(new Vector2(-3,1));
-            NormalBulletCollision(new Vector2(-2,1));
-            StopBulletCollision(new Vector2(-1,1));
-            StopBulletCollision(new Vector2(0,1));
-            NormalBulletCollision(new Vector2(1f,1));
-            NormalBulletCollision(new Vector2(2f,1));
-            NormalBulletCollision(new Vector2(3f,1));
-            StopBulletCollision(new Vector2(4f,1));
-            NormalBulletCollision(new Vector2(5f,1));
-            NormalBulletCollision(new Vector2(6f,1));
+            if (example != 58) {
+                NormalBulletCollision(new Vector2(-4,1));
+                NormalBulletCollision(new Vector2(-3,1));
+                NormalBulletCollision(new Vector2(-2,1));
+                StopBulletCollision(new Vector2(-1,1));
+                StopBulletCollision(new Vector2(0,1));
+                NormalBulletCollision(new Vector2(1f,1));
+                NormalBulletCollision(new Vector2(2f,1));
+                NormalBulletCollision(new Vector2(3f,1));
+                StopBulletCollision(new Vector2(4f,1));
+                NormalBulletCollision(new Vector2(5f,1));
+                NormalBulletCollision(new Vector2(6f,1));
+            }
             GameObject part = CreateFollowPart(box.transform);
             GameObject part2 = CreateFollowPart(part.transform);
         }
@@ -596,6 +603,7 @@ public class Movement : MonoBehaviour
         // Vertical: Bottom = -1, Top = 1
         movementDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         timeElapsed += Time.deltaTime;
+        spawnElapsedTime += Time.deltaTime;
         if (example == 48) {
             if (Input.GetMouseButtonDown(0)) {
                 mouseStartDragPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -1244,10 +1252,26 @@ public class Movement : MonoBehaviour
            
             
             ShowKeys();
-        } else if (example == 55 || example == 56 || example == 57) {
+        } else if (example == 55 || example == 56 || example == 57 || example == 58) {
+            
+            if (example == 58) {
+                var seconds = 0.5f;
+                if (spawnElapsedTime * seconds >= seconds) {
+                    spawnElapsedTime = 0;
+                    var height = Camera.main.orthographicSize;
+                    var width = height * Camera.main.aspect;
+                    var foodPosition = new Vector2(UnityEngine.Random.Range(width, -width), UnityEngine.Random.Range(height, -height));
+                    NormalBulletCollision(foodPosition);
+                }
+            }
             var rotationSpeed = 150f;
             var moveSpeed = 1.5f;
-            
+            if (isHoldingSpace) {
+                moveSpeed *= 2;
+            }
+
+            onSpeedChangeDelegate(isHoldingSpace);
+
             box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
            
@@ -1262,8 +1286,10 @@ public class Movement : MonoBehaviour
                 }
             }
             
-
             ShowKeys();
+            if (example == 58) { 
+                ShowSpaceKey();
+            }
         }
         
     }
@@ -1281,9 +1307,10 @@ public class Movement : MonoBehaviour
         bodyPart.transform.parent = bodyParts.transform;
         BodyPart bodyPartComponent = bodyPart.GetComponent<BodyPart>();
         bodyPartComponent.FollowTarget = followTarget;
-        bodyPartComponent.Speed = 1.5f;
         bodyPartComponent.SpaceBetween = spaceBetween;
-
+        if (example == 58) {
+            onSpeedChangeDelegate += bodyPartComponent.ChangeSpeed;
+        }
         return bodyPart;
     }
     private Vector3 FollowPosition(Transform target, float spaceBetween)
