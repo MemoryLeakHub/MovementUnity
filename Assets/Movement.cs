@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -105,6 +106,14 @@ public class Movement : MonoBehaviour
     public LayerMask collectMask;
     public GameObject followPartPref;
     public LineRenderer ropeLR;
+    public GameObject cinemachine;
+    public GameObject defaultCamera;
+    public CinemachineConfiner2D confiner2D;
+    public PolygonCollider2D worldCollider;
+    public EdgeCollider2D edgeCollider2D;
+    public BoxCollider2D boxCollider2D;
+    public BoxCollider2D topEdgeCollider2D;
+    public LayerMask wallsMask;
     void Start() {
         cameraStartPosition = camera.transform.position;
     }
@@ -130,6 +139,7 @@ public class Movement : MonoBehaviour
         start = false;
         visualDistance = 0;
         distanceGroup.active = false;
+        worldCollider.enabled = false;
         distanceText.gameObject.active = false;
         rotationGroup.active = false;
         rotationText.gameObject.active = false;
@@ -146,6 +156,7 @@ public class Movement : MonoBehaviour
         keys.active = false;
         
         // 40+
+        confiner2D.m_BoundingShape2D = null;
         boxLineRenderer.positionCount = 0;
         boxLineRenderer.material = spriteDefault;
         previousBoxRotation = -1f;
@@ -157,6 +168,9 @@ public class Movement : MonoBehaviour
         speedGroup.active = false;
         mouseGroup.active = false;
         physicsHook.active = false;
+        cinemachine.active = false;
+        defaultCamera.active = true;
+        defaultCamera.transform.position = new Vector3(0,0,-10);
         ropeLR.enabled = false;
         physicsRedBoxRb.bodyType = RigidbodyType2D.Kinematic;
         physicsHook.transform.localPosition = new Vector2(0,0);
@@ -508,6 +522,29 @@ public class Movement : MonoBehaviour
             GameObject part = CreateFollowPart(box.transform);
             GameObject part2 = CreateFollowPart(part.transform);
         } else if (example == 55) { 
+            BoxScale(0.35f);
+            ShowBox();
+            ShowBoxFacingLine();
+            NormalBulletCollision(new Vector2(-4,1));
+            NormalBulletCollision(new Vector2(-3,1));
+            NormalBulletCollision(new Vector2(-2,1));
+            StopBulletCollision(new Vector2(-1,1));
+            StopBulletCollision(new Vector2(0,1));
+            NormalBulletCollision(new Vector2(1f,1));
+            NormalBulletCollision(new Vector2(2f,1));
+            NormalBulletCollision(new Vector2(3f,1));
+            StopBulletCollision(new Vector2(4f,1));
+            NormalBulletCollision(new Vector2(5f,1));
+            NormalBulletCollision(new Vector2(6f,1));
+            GameObject part = CreateFollowPart(box.transform);
+            GameObject part2 = CreateFollowPart(part.transform);
+        } else if (example == 56 || example == 57) {
+            cinemachine.active = true;
+            if (example == 57) { 
+                worldCollider.enabled = false;
+                confiner2D.m_BoundingShape2D = worldCollider;
+            }
+            
             BoxScale(0.35f);
             ShowBox();
             ShowBoxFacingLine();
@@ -1207,9 +1244,10 @@ public class Movement : MonoBehaviour
            
             
             ShowKeys();
-        } else if (example == 55) {
+        } else if (example == 55 || example == 56 || example == 57) {
             var rotationSpeed = 150f;
             var moveSpeed = 1.5f;
+            
             box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
            
