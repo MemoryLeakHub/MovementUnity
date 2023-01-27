@@ -67,11 +67,11 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0
+    - _Offset: 1.53
     - _Parallax: 0.02
-    - _RepeatCount: 23.15
+    - _RepeatCount: 15.84
     - _SmoothnessTextureChannel: 0
-    - _Spacing: 1.35
+    - _Spacing: 1.6
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0

@@ -147,7 +147,7 @@ TrailRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5165699670508074073}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -190,7 +190,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.20149994
+        value: 0.24240112
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -213,7 +213,7 @@ TrailRenderer:
       serializedVersion: 2
       key0: {r: 0.58431375, g: 0.49803922, b: 0.72156864, a: 1}
       key1: {r: 0.58431375, g: 0.49803922, b: 0.72156864, a: 0.972549}
-      key2: {r: 0, g: 0, b: 0, a: 0.34509805}
+      key2: {r: 0, g: 0, b: 0, a: 0.15294118}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}

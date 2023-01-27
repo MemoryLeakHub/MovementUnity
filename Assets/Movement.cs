@@ -548,6 +548,8 @@ public class Movement : MonoBehaviour
                 confiner2D.m_BoundingShape2D = worldCollider;
             }
             if (example == 58) {
+                
+                spaceLabel.text = "SPEED";
                 ShowSpaceKey();
             }
             BoxScale(0.35f);
@@ -1021,7 +1023,7 @@ public class Movement : MonoBehaviour
             ShowRotation(box.transform.rotation.eulerAngles.z);
             ShowKeys();
             ShowSpaceKey();
-            ShowForceSpeed();
+            ShowForceSpeed(); 
         } else if (example == 48) {
              if (dragging) {
                 var rotationSpeed = 20f;
@@ -1136,13 +1138,7 @@ public class Movement : MonoBehaviour
                 physicsHookRb.MovePosition(push);
             }
 
-            // Check if the redbox is attached to the magnet
-            // Check if the magnet is attached to the start position
-            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
-                finishedPull = true;
-            }
-
-            if (toggleOnClick && !finishedPull) {
+            if (toggleOnClick) {
                 var pullTime = mouseTimeElapsed / totalTime;
                 var pull = Vector3.Lerp(physicsHookRb.transform.position, physicsShootGO.transform.position, pullTime);
                 physicsHookRb.MovePosition(pull);
@@ -1164,14 +1160,15 @@ public class Movement : MonoBehaviour
             
             // Check if the redbox is attached to the magnet
             // Check if the magnet is attached to the start position
-            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
+            if (raycastHit2D.collider != null 
+            && physicsHookCollider.IsTouching(shootGOCollider) 
+            && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
                 finishedPull = true;
             }
 
             // !ToggleOnClik - Check if it's detachable
             // !finishedPull - Make sure it's not pulled already
             // Check if the magnet is touching the redbox
-            Debug.Log("finishedPull : " + finishedPull + " toggleOnClick : " + toggleOnClick);
             if (raycastHit2D.collider != null &&  
                 !physicsHookCollider.IsTouching(shootGOCollider) && 
                 physicsHookCollider.IsTouching(raycastHit2D.collider) &&
@@ -1202,7 +1199,9 @@ public class Movement : MonoBehaviour
             
             // Check if the redbox is attached to the magnet
             // Check if the magnet is attached to the start position
-            if (raycastHit2D.collider != null && physicsHookCollider.IsTouching(shootGOCollider) && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
+            if (raycastHit2D.collider != null 
+            && physicsHookCollider.IsTouching(shootGOCollider) 
+            && physicsHookCollider.IsTouching(raycastHit2D.collider)) {
                 finishedPull = true;
             }
 
@@ -1260,7 +1259,9 @@ public class Movement : MonoBehaviour
                     spawnElapsedTime = 0;
                     var height = Camera.main.orthographicSize;
                     var width = height * Camera.main.aspect;
-                    var foodPosition = new Vector2(UnityEngine.Random.Range(width, -width), UnityEngine.Random.Range(height, -height));
+                    var foodPosition = new Vector2(
+                                UnityEngine.Random.Range(width, -width), 
+                                UnityEngine.Random.Range(height, -height));
                     NormalBulletCollision(foodPosition);
                 }
             }
@@ -1269,16 +1270,15 @@ public class Movement : MonoBehaviour
             if (isHoldingSpace) {
                 moveSpeed *= 2;
             }
-
-            onSpeedChangeDelegate(isHoldingSpace);
-
+            if (example == 58) {
+                onSpeedChangeDelegate(isHoldingSpace);
+            }
             box.transform.Translate(Vector2.right * moveSpeed * Time.fixedDeltaTime, Space.Self);
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.fixedDeltaTime);
            
             var radius = 1.5f;
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll((Vector2)box.transform.position, radius, collectMask);
-            foreach (var hitCollider in hitColliders)
-            {
+            foreach (var hitCollider in hitColliders) {
                 var collect = hitCollider.gameObject.GetComponent<Collect>();
                 collect.callback = OnEat;
                 if (!collect.isCollecting) {
@@ -1299,11 +1299,7 @@ public class Movement : MonoBehaviour
     }
     private GameObject CreateFollowPart(Transform followTarget) { 
         var spaceBetween =  1f;
-        var bodyPart = Instantiate(
-            followPartPref,
-            FollowPosition(followTarget, spaceBetween),
-            Quaternion.identity
-        );
+        var bodyPart = Instantiate(followPartPref,FollowPosition(followTarget, spaceBetween),Quaternion.identity);
         bodyPart.transform.parent = bodyParts.transform;
         BodyPart bodyPartComponent = bodyPart.GetComponent<BodyPart>();
         bodyPartComponent.FollowTarget = followTarget;
@@ -1361,7 +1357,8 @@ public class Movement : MonoBehaviour
     }
 
     private void CreatePhysicsScene_Trajectory() { 
-        sceneSimulation = SceneManager.CreateScene("PhysicsTrajectorySimulation", new CreateSceneParameters(LocalPhysicsMode.Physics2D));
+        sceneSimulation = SceneManager.CreateScene("PhysicsTrajectorySimulation", 
+        new CreateSceneParameters(LocalPhysicsMode.Physics2D));
         physicsScene = sceneSimulation.GetPhysicsScene2D();
         foreach(Transform obj in physicsSceneObjects) {
             var physicsObject = Instantiate(obj.gameObject, obj.position, obj.rotation);
@@ -1379,13 +1376,11 @@ public class Movement : MonoBehaviour
 
         Vector3[] points = new Vector3[50];
         boxLineRenderer.positionCount = points.Length;
-        for (int i = 0; i < points.Length; i++)
-        {
+        for (int i = 0; i < points.Length; i++) {
             physicsScene.Simulate(Time.fixedDeltaTime);
             points[i] = bullet.transform.position;
         }
         boxLineRenderer.SetPositions(points);
-
         Destroy(bullet.gameObject);
     }
     public void ShowTrajectory(float force)
@@ -1396,13 +1391,11 @@ public class Movement : MonoBehaviour
         Physics2D.simulationMode = SimulationMode2D.Script;
         Vector3[] points = new Vector3[50];
         boxLineRenderer.positionCount = points.Length;
-        for (int i = 0; i < points.Length; i++)
-        {
+        for (int i = 0; i < points.Length; i++) {
             Physics2D.Simulate(Time.fixedDeltaTime);
             points[i] = bullet.transform.position;
         }
         boxLineRenderer.SetPositions(points);
-
         Physics2D.simulationMode = SimulationMode2D.FixedUpdate;
         Destroy(bullet.gameObject);
     }
@@ -1425,9 +1418,9 @@ public class Movement : MonoBehaviour
         Destroy(bullet.gameObject);
     }
     private bool isBulletToichingStopCollider(Collider2D bulletCollider2D) { 
-         foreach (Collider2D collider in stopBulletColliders) {
-            var distance = (bulletCollider2D.gameObject.transform.position - collider.transform.position).magnitude;
-            Debug.Log(collider.gameObject.name);
+        var pos = bulletCollider2D.gameObject.transform.position;
+        foreach (Collider2D collider in stopBulletColliders) {
+            var distance = (pos - collider.transform.position).magnitude;
             if (collider.IsTouching(bulletCollider2D)) {
                 return true;
             }
@@ -1443,10 +1436,8 @@ public class Movement : MonoBehaviour
 
         Vector3[] points = new Vector3[50];
         var pointsBeforeCollision = 0;
-        for (int i = 0; i < points.Length; i++)
-        {
+        for (int i = 0; i < points.Length; i++) {
             physicsScene.Simulate(Time.fixedDeltaTime);
-            Debug.Log(isBulletToichingStopCollider(bulletCollider2D));
             if (isBulletToichingStopCollider(bulletCollider2D)) {
                 break;
             }
@@ -1491,7 +1482,6 @@ public class Movement : MonoBehaviour
         physicsBoxRb.AddForce(Vector2.up * amount, ForceMode2D.Impulse);
     }
     private void Example_Shoot_Hook() { 
-        Debug.Log(physicsShootGO.transform.position);
         RaycastHit2D hit = Physics2D.Raycast(physicsShootGO.transform.position, Vector3.right, hookDistance, grabMask);
         if (hit.collider != null) {
             shoot = true;
