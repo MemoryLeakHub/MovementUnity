@@ -199,11 +199,11 @@ public class Movement : MonoBehaviour
         boxStartPosition = box.transform.position;
         start = true;
 
-        // if (example == 1) {
-        //     Example1();
-        // } else if (example == 2) {
-        //     Example2();
-        // }
+        if (example == 1) {
+            Example1();
+        } else if (example == 2) {
+            Example2();
+        }
     }
 
     
@@ -631,9 +631,9 @@ public class Movement : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
             Debug.Log("GetKeyDown");
-            // if (example == 23) {
-            //     Example_Jump();
-            // } else 
+            if (example == 23) {
+                Example_Jump();
+            } else 
             if (example == 40) {
                 Example_Shoot();
             } else if (example == 41) {
@@ -675,283 +675,283 @@ public class Movement : MonoBehaviour
             speedTimeElapsed += Time.deltaTime;
         }
             
-        // if (example == 3) {
-        //     box.transform.position += new Vector3(2 * Time.deltaTime,0);   
-        // } else if (example == 4) {
-        //     box.transform.position += Vector3.right * 2 * Time.deltaTime;    
-        // } else if (example == 5) {
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     box.transform.position += Vector3.right * 2 * Time.deltaTime;    
-        //     ShowTimer();
-        // } else if (example == 6) {
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
-        //     ShowTimer();
-        // } else if (example == 7) {
-        //     ShowBoxFacingLine();
-        //     RotateBox(10);
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     box.transform.position += Vector3.right * 2 * Time.deltaTime;  
-        //     ShowTimer();  
-        // } else if (example == 8) {
-        //     ShowBoxFacingLine();
-        //     RotateBox(10);
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
-        //     ShowTimer();
-        // } else if (example == 9) {
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+        if (example == 3) {
+            box.transform.position += new Vector3(2 * Time.deltaTime,0);   
+        } else if (example == 4) {
+            box.transform.position += Vector3.right * 2 * Time.deltaTime;    
+        } else if (example == 5) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            box.transform.position += Vector3.right * 2 * Time.deltaTime;    
+            ShowTimer();
+        } else if (example == 6) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
+            ShowTimer();
+        } else if (example == 7) {
+            ShowBoxFacingLine();
+            RotateBox(10);
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            box.transform.position += Vector3.right * 2 * Time.deltaTime;  
+            ShowTimer();  
+        } else if (example == 8) {
+            ShowBoxFacingLine();
+            RotateBox(10);
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
+            ShowTimer();
+        } else if (example == 9) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     Vector3 heading = redBox.transform.position - box.transform.position;
-        //     var distance = heading.magnitude;
-        //     SetDistance(distance);
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            SetDistance(distance);
 
-        //     box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
+            box.transform.Translate(Vector3.right * 2 * Time.deltaTime);
 
-        //     ShowTimer();
-        //     ShowDistance();
-        // } else if (example == 10) {
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            ShowTimer();
+            ShowDistance();
+        } else if (example == 10) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     Vector3 heading = redBox.transform.position - box.transform.position;
-        //     var distance = heading.magnitude;
-        //     var direction = heading.normalized;
-        //     box.transform.Translate(direction * 2 * Time.deltaTime);
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            var direction = heading.normalized;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
 
-        //     SetDistance(distance);
+            SetDistance(distance);
 
-        //     ShowTimer();
-        //     ShowDistance();
-        // } else if (example == 11) {
-        //     ShowRedBox(2, 2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            ShowTimer();
+            ShowDistance();
+        } else if (example == 11) {
+            ShowRedBox(2, 2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     Vector3 heading = redBox.transform.position - box.transform.position;
-        //     var distance = heading.magnitude;
-        //     var direction = heading.normalized;
-        //     box.transform.Translate(direction * 2 * Time.deltaTime);
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            var distance = heading.magnitude;
+            var direction = heading.normalized;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
 
-        //     SetDistance(distance);
+            SetDistance(distance);
 
-        //     ShowTimer();
-        //     ShowDistance();
-        // } else if (example == 12) {
-        //     ShowRedBox(2, 2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            ShowTimer();
+            ShowDistance();
+        } else if (example == 12) {
+            ShowRedBox(2, 2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     Vector3 heading = redBox.transform.position - box.transform.position;
-        //     heading.y = 0;
-        //     var distance = heading.magnitude;
-        //     var direction = heading.normalized;
-        //     box.transform.Translate(direction * 2 * Time.deltaTime);
+            Vector3 heading = redBox.transform.position - box.transform.position;
+            heading.y = 0;
+            var distance = heading.magnitude;
+            var direction = heading.normalized;
+            box.transform.Translate(direction * 2 * Time.deltaTime);
 
-        //     SetDistance(distance);
+            SetDistance(distance);
 
-        //     ShowTimer();
-        //     ShowDistance();
-        // } else if (example == 13) {
-        //     ShowRedBox(2);
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            ShowTimer();
+            ShowDistance();
+        } else if (example == 13) {
+            ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     Vector3 heading = redBox.transform.position - boxStartPosition;
-        //     var distance = heading.magnitude;
-        //     var direction = heading.normalized;
-        //     var totalTime = 1.5f; // seconds
-        //     var speed = distance / totalTime;
-        //     box.transform.Translate(direction * speed * Time.deltaTime);
-        //     SetDistance(distance);
+            Vector3 heading = redBox.transform.position - boxStartPosition;
+            var distance = heading.magnitude;
+            var direction = heading.normalized;
+            var totalTime = 1.5f; // seconds
+            var speed = distance / totalTime;
+            box.transform.Translate(direction * speed * Time.deltaTime);
+            SetDistance(distance);
 
-        //     ShowTimer();
-        //     ShowDistance();
-        // } else if (example == 14) {
-        //     ShowRedBox(2);
+            ShowTimer();
+            ShowDistance();
+        } else if (example == 14) {
+            ShowRedBox(2);
 
-        //     var speed = 2; // seconds
-        //     var step = speed * Time.deltaTime;
-        //     var target = redBox.transform.position;
-        //     box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
+            var speed = 2; // seconds
+            var step = speed * Time.deltaTime;
+            var target = redBox.transform.position;
+            box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
 
-        //     ShowTimer();
-        // } else if (example == 15) {
-        //     ShowRedBox(2);
+            ShowTimer();
+        } else if (example == 15) {
+            ShowRedBox(2);
 
-        //     var speed = 2; // seconds
-        //     var step = speed * Time.deltaTime;
-        //     var target = redBox.transform.position;
-        //     box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
-        //     if (Vector3.Distance(box.transform.position, target) < 0.001f)
-        //     {
-        //         return;
-        //     }
+            var speed = 2; // seconds
+            var step = speed * Time.deltaTime;
+            var target = redBox.transform.position;
+            box.transform.position = Vector2.MoveTowards(box.transform.position, target, step);
+            if (Vector3.Distance(box.transform.position, target) < 0.001f)
+            {
+                return;
+            }
 
-        //     ShowTimer();
-        // } else if (example == 16) {
-        //     ShowRedBox(2);
+            ShowTimer();
+        } else if (example == 16) {
+            ShowRedBox(2);
 
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     var target = redBox.transform.position;
-        //     var totalTime = 1.5f;
-        //     var x = Mathf.Lerp(boxStartPosition.x, target.x, timeElapsed / totalTime);
-        //     SetXPosition(x);
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var x = Mathf.Lerp(boxStartPosition.x, target.x, timeElapsed / totalTime);
+            SetXPosition(x);
             
-        //     ShowTimer();
-        // } else if (example == 17) {
-        //     ShowRedBox(2);
+            ShowTimer();
+        } else if (example == 17) {
+            ShowRedBox(2);
 
-        //     var target = redBox.transform.position;
-        //     var totalTime = 1.5f;
-        //     box.transform.position = Vector3.Lerp(boxStartPosition, target, timeElapsed / totalTime);
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, timeElapsed / totalTime);
             
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
 
-        //     ShowTimer();
-        // } else if (example == 18) {
-        //     ShowRedBox(2);
+            ShowTimer();
+        } else if (example == 18) {
+            ShowRedBox(2);
 
-        //     var target = redBox.transform.position;
-        //     var totalTime = 1.5f;
-        //     var time = timeElapsed / totalTime;
-        //     box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseIn(time));
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseIn(time));
             
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
             
-        //     ShowTimer();
-        // } else if (example == 19) {
-        //     ShowRedBox(2);
+            ShowTimer();
+        } else if (example == 19) {
+            ShowRedBox(2);
 
-        //     var target = redBox.transform.position;
-        //     var totalTime = 1.5f;
-        //     var time = timeElapsed / totalTime;
-        //     box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseOut(time));
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, EaseOut(time));
             
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     ShowTimer();
-        // } else if (example == 20) {
-        //     ShowRedBox(2);
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            ShowTimer();
+        } else if (example == 20) {
+            ShowRedBox(2);
 
-        //     var target = redBox.transform.position;
-        //     var totalTime = 1.5f;
-        //     var time = timeElapsed / totalTime;
-        //     box.transform.position = Vector3.Lerp(boxStartPosition, target, BounceOut(time));
+            var target = redBox.transform.position;
+            var totalTime = 1.5f;
+            var time = timeElapsed / totalTime;
+            box.transform.position = Vector3.Lerp(boxStartPosition, target, BounceOut(time));
             
-        //     if (box.transform.position.x >= redBox.transform.position.x) {
-        //         return;
-        //     }
-        //     ShowTimer();
-        // } else if (example == 21) {
-        //     ShowRedBox(2);
-        //     ShowKeys();
+            if (box.transform.position.x >= redBox.transform.position.x) {
+                return;
+            }
+            ShowTimer();
+        } else if (example == 21) {
+            ShowRedBox(2);
+            ShowKeys();
             
-        //     box.transform.Translate(movementDirection * 2 * Time.deltaTime);
-        // } else if (example == 27) {
-        //     ShowBoxFacingLine();
-        //     // rotating the z axis because we are in 2D
-        //     var degrees = 30;
-        //     box.transform.rotation = Quaternion.Euler(Vector3.forward * degrees);
-        //     ShowRotation(degrees);
-        // } else if (example == 28) {
-        //     ShowBoxFacingLine();
-        //     MoveRedBoxVertical(2f, 0.1f);
+            box.transform.Translate(movementDirection * 2 * Time.deltaTime);
+        } else if (example == 27) {
+            ShowBoxFacingLine();
+            // rotating the z axis because we are in 2D
+            var degrees = 30;
+            box.transform.rotation = Quaternion.Euler(Vector3.forward * degrees);
+            ShowRotation(degrees);
+        } else if (example == 28) {
+            ShowBoxFacingLine();
+            MoveRedBoxVertical(2f, 0.1f);
 
-        //     Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
-        //     // When rotated by 90 degress we define our Upwards direction
-        //     // At 0 degrees the object points at the right side
-        //     Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
-        //     box.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+            Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
+            // When rotated by 90 degress we define our Upwards direction
+            // At 0 degrees the object points at the right side
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            box.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
 
-        //     ShowRotation(box.transform.rotation.eulerAngles.z);
-        // } else if (example == 29) {
-        //     ShowBoxFacingLine();
-        //     MoveRedBoxVertical(2f, 0.1f);
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        } else if (example == 29) {
+            ShowBoxFacingLine();
+            MoveRedBoxVertical(2f, 0.1f);
 
-        //     Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
-        //     // The axis that we specify follows the target
-        //     // In our case Vector.right is X axis so we want it to follow the Target
-        //     box.transform.rotation = Quaternion.FromToRotation(Vector3.right, vectorToTarget);
-        //     ShowRotation(box.transform.rotation.eulerAngles.z);
-        // } else if (example == 30) {
+            Vector3 vectorToTarget = redBox.transform.position - boxStartPosition;
+            // The axis that we specify follows the target
+            // In our case Vector.right is X axis so we want it to follow the Target
+            box.transform.rotation = Quaternion.FromToRotation(Vector3.right, vectorToTarget);
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        } else if (example == 30) {
 
-        //     var degrees = 30;
-        //     box.transform.rotation = Quaternion.AngleAxis(degrees, Vector3.forward);
+            var degrees = 30;
+            box.transform.rotation = Quaternion.AngleAxis(degrees, Vector3.forward);
 
-        //     ShowRotation(box.transform.rotation.eulerAngles.z);
-        // } else if (example == 31) {
-        //     ShowBoxFacingLine();
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+        } else if (example == 31) {
+            ShowBoxFacingLine();
 
-        //     var rotationSpeed = 30;
-        //     redBox.transform.RotateAround(
-        //         box.transform.position, 
-        //         Vector3.forward, 
-        //         rotationSpeed * Time.deltaTime
-        //     );
+            var rotationSpeed = 30;
+            redBox.transform.RotateAround(
+                box.transform.position, 
+                Vector3.forward, 
+                rotationSpeed * Time.deltaTime
+            );
 
-        //     ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        // } else if (example == 32) {
-        //     ShowBoxFacingLine();
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        } else if (example == 32) {
+            ShowBoxFacingLine();
 
-        //     var rotationSpeed = 30;
-        //     Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
-        //     Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
-        //     redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
-        //     redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
+            var rotationSpeed = 30;
+            Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+            redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
 
-        //     ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        // } else if (example == 33) {
-        //     ShowBoxFacingLine();
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        } else if (example == 33) {
+            ShowBoxFacingLine();
 
-        //     var rotationSpeed = 30;
-        //     Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
-        //     Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
-        //     redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
-        //     box.transform.rotation = Quaternion.LookRotation(Vector3.back, rotateVectorToTarget);
-        //     redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
+            var rotationSpeed = 30;
+            Vector3 vectorToTarget = box.transform.position - redBox.transform.position;
+            Vector3 rotateVectorToTarget = Quaternion.Euler(0, 0, 90) * vectorToTarget;
+            redBox.transform.rotation = Quaternion.LookRotation(Vector3.forward, rotateVectorToTarget);
+            box.transform.rotation = Quaternion.LookRotation(Vector3.back, rotateVectorToTarget);
+            redBox.transform.RotateAround(box.transform.position, Vector3.back, rotationSpeed * Time.deltaTime);
 
-        //     ShowRotation(redBox.transform.rotation.eulerAngles.z);
-        // } else if (example == 34) {
-        //     OrbitAround(planets[1], planets[0], 40);
-        //     OrbitAround(planets[2], planets[0], 50);
-        //     OrbitAround(planets[3], planets[0], 80);
-        //     OrbitAround(planets[4], planets[0], 20);
-        // } else if (example == 39) {
-        //     var rotationSpeed = 20;
-        //     box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
+            ShowRotation(redBox.transform.rotation.eulerAngles.z);
+        } else if (example == 34) {
+            OrbitAround(planets[1], planets[0], 40);
+            OrbitAround(planets[2], planets[0], 50);
+            OrbitAround(planets[3], planets[0], 80);
+            OrbitAround(planets[4], planets[0], 20);
+        } else if (example == 39) {
+            var rotationSpeed = 20;
+            box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
 
-        //     ShowRotation(box.transform.rotation.eulerAngles.z);
-        //     ShowKeys();
-        // } else 
+            ShowRotation(box.transform.rotation.eulerAngles.z);
+            ShowKeys();
+        } else 
         if (example == 40) {
             var rotationSpeed = 20;
             box.transform.Rotate(Vector3.forward * -movementDirection.x * rotationSpeed * Time.deltaTime);
@@ -1053,69 +1053,69 @@ public class Movement : MonoBehaviour
         if (!start) {
             return;
         } 
-    //      if (example == 22) {
-    //         ShowKeys();
-    //         var speed = 10f;
-    //         boxPhysicsRb.AddForce(movementDirection * speed);
-    //     } else if (example == 23) {
-    //         ShowKeys();
-    //     } else if (example == 24) {
-    //         ShowKeys();
+        if (example == 22) {
+            ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.AddForce(movementDirection * speed);
+        } else if (example == 23) {
+            ShowKeys();
+        } else if (example == 24) {
+            ShowKeys();
             
-    //         var speed = 10f;
-    //         boxPhysicsRb.velocity = movementDirection * speed;
-    //     } else if (example == 25) {
-    //         ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.velocity = movementDirection * speed;
+        } else if (example == 25) {
+            ShowKeys();
             
-    //         var speed = 10f;
-    //         boxPhysicsRb.MovePosition(
-    //             (Vector2)physicsBox.transform.position + 
-    //             (movementDirection * speed * Time.deltaTime)
-    //         );
-    //     } else if (example == 26) {
-    //         ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.MovePosition(
+                (Vector2)physicsBox.transform.position + 
+                (movementDirection * speed * Time.deltaTime)
+            );
+        } else if (example == 26) {
+            ShowKeys();
             
-    //         var speed = 2f;
-    //         float time = Mathf.PingPong(timeElapsed*speed, 1);
-    //         Vector3 startPosition = new Vector2(1,0);
-    //         Vector3 endPosition = new Vector2(3,0);
-    //         Vector3 position = Vector3.Lerp(startPosition, endPosition, time);
-    //         physicsRedPlatformRb.MovePosition(position);
+            var speed = 2f;
+            float time = Mathf.PingPong(timeElapsed*speed, 1);
+            Vector3 startPosition = new Vector2(1,0);
+            Vector3 endPosition = new Vector2(3,0);
+            Vector3 position = Vector3.Lerp(startPosition, endPosition, time);
+            physicsRedPlatformRb.MovePosition(position);
             
-    //         var boxSpeed = 10f;
-    //         boxPhysicsRb.velocity = movementDirection * boxSpeed;
-    //    } else if (example == 35) {
-    //         ShowKeys();
+            var boxSpeed = 10f;
+            boxPhysicsRb.velocity = movementDirection * boxSpeed;
+       } else if (example == 35) {
+            ShowKeys();
 
-    //         var speed = 10f;
-    //         boxPhysicsRb.MovePosition(
-    //             (Vector2)physicsBox.transform.position + 
-    //             (movementDirection * speed * Time.deltaTime));
-    //         camera.transform.position = new Vector3(
-    //             physicsBox.transform.position.x, 
-    //             physicsBox.transform.position.y, 0); 
-    //     } else if (example == 36) {
-    //         ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.MovePosition(
+                (Vector2)physicsBox.transform.position + 
+                (movementDirection * speed * Time.deltaTime));
+            camera.transform.position = new Vector3(
+                physicsBox.transform.position.x, 
+                physicsBox.transform.position.y, 0); 
+        } else if (example == 36) {
+            ShowKeys();
 
-    //         var speed = 10f;
-    //         boxPhysicsRb.MovePosition(
-    //             (Vector2)physicsBox.transform.position + 
-    //             (movementDirection * speed * Time.deltaTime)
-    //         );
-    //     } else if (example == 37) {
-    //         ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.MovePosition(
+                (Vector2)physicsBox.transform.position + 
+                (movementDirection * speed * Time.deltaTime)
+            );
+        } else if (example == 37) {
+            ShowKeys();
 
-    //         var speed = 10f;
-    //         boxPhysicsRb.MovePosition(
-    //             (Vector2)physicsBox.transform.position + 
-    //             (movementDirection * speed * Time.deltaTime)
-    //         );
-    //     } else if (example == 38) {
-    //         ShowKeys();
+            var speed = 10f;
+            boxPhysicsRb.MovePosition(
+                (Vector2)physicsBox.transform.position + 
+                (movementDirection * speed * Time.deltaTime)
+            );
+        } else if (example == 38) {
+            ShowKeys();
 
-    //         var speed = 10f;
-    //         boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
-    //     } else 
+            var speed = 10f;
+            boxPhysicsRb.MovePosition((Vector2)physicsBox.transform.position + (movementDirection * speed * Time.deltaTime));
+        } else 
          if (example == 49) {
             var shootDistance =  Vector3.Distance(physicsShootGO.transform.position, raycastHit2D.point);
             var hookSpeed = 20;
@@ -1327,33 +1327,33 @@ public class Movement : MonoBehaviour
     }
     void LateUpdate()
     {
-        // if (example == 36) {
-        //     Vector3 velocity = Vector3.zero;
-        //     camera.transform.position = Vector3.SmoothDamp(
-        //         camera.transform.position, 
-        //         boxPhysicsRb.gameObject.transform.position, 
-        //         ref velocity, 0.06f
-        //     );
-        // } else if (example == 37) {
-        //     Vector3 velocity = Vector3.zero;
-        //     var distance = Vector3.Distance(
-        //         camera.transform.position, 
-        //         boxPhysicsRb.gameObject.transform.position);
-        //     if (distance > 2f) {
-        //         camera.transform.position = Vector3.SmoothDamp(
-        //             camera.transform.position, 
-        //             boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
-        //     }
-        // } else if (example == 38) {
-        //     Vector3 velocity = Vector3.zero;
-        //     Vector3 bounds = new Vector3(
-        //         Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.x, -4f, 4f),
-        //         Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.y, -4f, 4f),
-        //         boxPhysicsRb.gameObject.transform.position.z
-        //     );
-        //     camera.transform.position = Vector3.SmoothDamp(
-        //         camera.transform.position, bounds, ref velocity, 0.06f);
-        // } 
+        if (example == 36) {
+            Vector3 velocity = Vector3.zero;
+            camera.transform.position = Vector3.SmoothDamp(
+                camera.transform.position, 
+                boxPhysicsRb.gameObject.transform.position, 
+                ref velocity, 0.06f
+            );
+        } else if (example == 37) {
+            Vector3 velocity = Vector3.zero;
+            var distance = Vector3.Distance(
+                camera.transform.position, 
+                boxPhysicsRb.gameObject.transform.position);
+            if (distance > 2f) {
+                camera.transform.position = Vector3.SmoothDamp(
+                    camera.transform.position, 
+                    boxPhysicsRb.gameObject.transform.position, ref velocity, 0.06f);
+            }
+        } else if (example == 38) {
+            Vector3 velocity = Vector3.zero;
+            Vector3 bounds = new Vector3(
+                Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.x, -4f, 4f),
+                Mathf.Clamp(boxPhysicsRb.gameObject.transform.position.y, -4f, 4f),
+                boxPhysicsRb.gameObject.transform.position.z
+            );
+            camera.transform.position = Vector3.SmoothDamp(
+                camera.transform.position, bounds, ref velocity, 0.06f);
+        } 
     }
 
     private void CreatePhysicsScene_Trajectory() { 
