@@ -1,8 +1,8 @@
 ### Unity Movement Tutorials
 
-This is the repo for both of the video [Part 1]([ULTIMATE MOVEMENT Guide for Unity - Part 1 - YouTube](https://www.youtube.com/watch?v=OHJS44fIDCU)) and [Part 2]([ULTIMATE MOVEMENT Guide for Unity - Part 2 ( Trajectory , Magnet , Rope , Hook , Snake ) - Tutorial - YouTube](https://www.youtube.com/watch?v=pMa7D6uGTcE)) - ULTIMATE MOVEMENT Guide for Unity.  It consists of 58 examples of different types of movement. The project is made so you can test everything yourself. When you Play the project click on an example and then on the Play button. Every time you want to start a new new example first click on the **Reset button** -> **Example Number** -> **Play **.
+This is the repo for both of the video [Part 1]([ULTIMATE MOVEMENT Guide for Unity - Part 1 - YouTube](https://www.youtube.com/watch?v=OHJS44fIDCU)) and [Part 2]([ULTIMATE MOVEMENT Guide for Unity - Part 2 - YouTube](https://www.youtube.com/watch?v=pMa7D6uGTcE)) - ULTIMATE MOVEMENT Guide for Unity.  It consists of 58 examples of different types of movement. The project is made so you can test everything yourself. Every time you want to start a new new example first click on the **Reset button** -> **Example Number** -> **TRIGGER** .
 
-![examples.png](D:\Projects\Unity\Movement\Movement\screenshots\examples.png)
+![examples.png](https://github.com/MemoryLeakHub/MovementUnity/blob/main/screenshots/examples.png)
 
 
 
