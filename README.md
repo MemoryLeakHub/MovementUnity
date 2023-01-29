@@ -1,6 +1,6 @@
 ### Unity Movement Tutorials
 
-This is the repo for both of the video [Part 1]([ULTIMATE MOVEMENT Guide for Unity - Part 1 - YouTube](https://www.youtube.com/watch?v=OHJS44fIDCU)) and [Part 2]([ULTIMATE MOVEMENT Guide for Unity - Part 2 - YouTube](https://www.youtube.com/watch?v=pMa7D6uGTcE)) - ULTIMATE MOVEMENT Guide for Unity.  It consists of 58 examples of different types of movement. The project is made so you can test everything yourself. Every time you want to start a new new example first click on the **Reset button** -> **Example Number** -> **TRIGGER** .
+This is the repo for both of the video [Part 1]([ULTIMATE MOVEMENT Guide for Unity - Part 1 - YouTube](https://www.youtube.com/watch?v=OHJS44fIDCU)) and [Part 2]([ULTIMATE MOVEMENT Guide for Unity - Part 2 - YouTube](https://www.youtube.com/watch?v=pMa7D6uGTcE)) - ULTIMATE MOVEMENT Guide for Unity.  It consists of 58 examples of different types of movement. The project is made so you can test everything yourself. Every time you want to start a new example first click on the **Reset button** -> **Example Number** -> **TRIGGER** .
 
 ![examples.png](https://github.com/MemoryLeakHub/MovementUnity/blob/main/screenshots/examples.png)
 
@@ -28,19 +28,19 @@ This is the repo for both of the video [Part 1]([ULTIMATE MOVEMENT Guide for Uni
 
 10. Find direction between two objects: ([03:01](https://www.youtube.com/watch?v=OHJS44fIDCU&t=181s))
 
-11. Move to object single axis: ([03:35](https://www.youtube.com/watch?v=OHJS44fIDCU&t=215s))
+11. Find direction between two objects Example 2: ([03:24](https://www.youtube.com/watch?v=OHJS44fIDCU&t=204s))
 
-12. Move to destination for specific amount of time: ([03:53](https://www.youtube.com/watch?v=OHJS44fIDCU&t=233s))
+12. Move to object single axis: ([03:35](https://www.youtube.com/watch?v=OHJS44fIDCU&t=215s))
 
-13. Move to destination with MoveTowards: ([04:18](https://www.youtube.com/watch?v=OHJS44fIDCU&t=258s))
+13. Move to destination for specific amount of time: ([03:53](https://www.youtube.com/watch?v=OHJS44fIDCU&t=233s))
 
-14. Vector3 Distance: ([05:04](https://www.youtube.com/watch?v=OHJS44fIDCU&t=304s))
+14. Move to destination with MoveTowards: ([04:18](https://www.youtube.com/watch?v=OHJS44fIDCU&t=258s))
 
-15. Moving with Mathf Lerp: ([05:11](https://www.youtube.com/watch?v=OHJS44fIDCU&t=311s))
+15. Vector3 Distance: ([05:04](https://www.youtube.com/watch?v=OHJS44fIDCU&t=304s))
 
-16. Moving with Vector3 Lerp: ([05:47](https://www.youtube.com/watch?v=OHJS44fIDCU&t=347s))
+16. Moving with Mathf Lerp: ([05:11](https://www.youtube.com/watch?v=OHJS44fIDCU&t=311s))
 
-17. Lerp EaseIn: ([05:47](https://www.youtube.com/watch?v=OHJS44fIDCU&t=347s))
+17. Moving with Vector3 Lerp: ([05:47](https://www.youtube.com/watch?v=OHJS44fIDCU&t=347s))
 
 18. Lerp EaseIn: ([06:11](https://www.youtube.com/watch?v=OHJS44fIDCU&t=371s))
 
@@ -130,4 +130,4 @@ If you would like to see more Guides for Unity, adding more examples for existin
 
 
 
-## I would also appreciate for a like and subscribe to the channel as it helps me a lot!
+## If you would like to support the channel you can leave a like and subscribe as this helps me a lot!
